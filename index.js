@@ -9,7 +9,7 @@ const TSCONFIG_PATH = process.env.TSCONFIG_PATH
 
 const { SourceMapConsumer, SourceMapGenerator } = require('source-map')
 
-function composeSourceMaps (tsMap, babelMap) {
+function composeSourceMaps(tsMap, babelMap) {
   const map = SourceMapGenerator.fromSourceMap(new SourceMapConsumer(babelMap))
   map.applySourceMap(new SourceMapConsumer(tsMap))
   return map.toJSON()
@@ -36,10 +36,10 @@ const tsConfig = (() => {
 })()
 
 const compilerOptions = Object.assign(tsConfig.compilerOptions, {
-  sourceMap: true
+  sourceMap: true,
 })
 
-module.exports.transform = function (sourceCode, filename, options) {
+module.exports.transform = function(sourceCode, filename, options) {
   if (filename.endsWith('.ts') || filename.endsWith('.tsx')) {
     const tsCompileResult = ts.transpileModule(sourceCode, { compilerOptions })
     const babelCompileResult = upstreamTransformer.transform(
@@ -47,11 +47,12 @@ module.exports.transform = function (sourceCode, filename, options) {
       filename,
       Object.assign({}, options, { generateSourceMaps: true })
     )
+
     return Object.assign({}, babelCompileResult, {
       map: composeSourceMaps(
         tsCompileResult.sourceMapText,
         babelCompileResult.map
-      )
+      ),
     })
   } else {
     return upstreamTransformer.transform(sourceCode, filename, options)

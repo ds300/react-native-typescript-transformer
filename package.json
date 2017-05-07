@@ -8,11 +8,23 @@
   "license": "MIT",
   "dependencies": {
     "app-root-path": "^2.0.1",
+    "husky": "^0.13.3",
+    "lint-staged": "^3.4.1",
     "source-map": "^0.5.6",
     "typescript": "^2.3.2"
   },
   "peerDependencies": {
     "react-native": "^0.44.0"
+  },
+  "scripts": {
+    "precommit": "lint-staged",
+    "test": "jest"
+  },
+  "lint-staged": {
+    "*.js": [
+      "prettier --write --no-semi --single-quote --trailing-comma es5",
+      "git add"
+    ]
   },
   "devDependencies": {
     "babel-jest": "^20.0.0",
