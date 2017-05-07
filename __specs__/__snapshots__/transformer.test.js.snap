@@ -1,0 +1,39 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`the transformer works 1`] = `
+"\\"use strict\\";
+
+Object.defineProperty(exports, \\"__esModule\\", { value: true });
+function Cheese() {
+    return { cheese: 'stilton' };
+}
+exports.default = Cheese;"
+`;
+
+exports[`the transformer works 2`] = `
+Object {
+  "mappings": "AAAA;;AACAA,OAAOC,cAAP,CAAsBC,OAAtB,EAA+B,YAA/B,EAA6C,EAAEC,OAAO,IAAT,EAA7C;AACA,SAASC,MAAT,GAAkB;AACd,WAAO,EAAEC,QAAQ,SAAV,EAAP;AACH;AACDH,QAAQI,OAAR,GAAkBF,MAAlB",
+  "names": Array [
+    "Object",
+    "defineProperty",
+    "exports",
+    "value",
+    "Cheese",
+    "cheese",
+    "default",
+  ],
+  "sources": Array [
+    "blah.tsx",
+  ],
+  "sourcesContent": Array [
+    "\\"use strict\\";
+Object.defineProperty(exports, \\"__esModule\\", { value: true });
+function Cheese() {
+    return { cheese: 'stilton' };
+}
+exports.default = Cheese;
+//# sourceMappingURL=module.js.map",
+  ],
+  "version": 3,
+}
+`;
