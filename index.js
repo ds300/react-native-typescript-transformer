@@ -37,14 +37,18 @@ const tsConfig = (() => {
 
 const compilerOptions = Object.assign(tsConfig.compilerOptions, {
   sourceMap: true,
+  inlineSources: true,
 })
 
-module.exports.transform = function(sourceCode, filename, options) {
-  if (filename.endsWith('.ts') || filename.endsWith('.tsx')) {
-    const tsCompileResult = ts.transpileModule(sourceCode, { compilerOptions })
+module.exports.transform = function(sourceCode, fileName, options) {
+  if (fileName.endsWith('.ts') || fileName.endsWith('.tsx')) {
+    const tsCompileResult = ts.transpileModule(sourceCode, {
+      compilerOptions,
+      fileName,
+    })
     const babelCompileResult = upstreamTransformer.transform(
       tsCompileResult.outputText,
-      filename,
+      fileName,
       Object.assign({}, options, { generateSourceMaps: true })
     )
 
@@ -55,6 +59,6 @@ module.exports.transform = function(sourceCode, filename, options) {
       ),
     })
   } else {
-    return upstreamTransformer.transform(sourceCode, filename, options)
+    return upstreamTransformer.transform(sourceCode, fileName, options)
   }
 }

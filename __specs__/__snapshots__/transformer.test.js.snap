@@ -26,13 +26,15 @@ Object {
     "blah.tsx",
   ],
   "sourcesContent": Array [
-    "\\"use strict\\";
-Object.defineProperty(exports, \\"__esModule\\", { value: true });
-function Cheese() {
-    return { cheese: 'stilton' };
+    "
+type Cheese = {
+  readonly cheese: string
 }
-exports.default = Cheese;
-//# sourceMappingURL=module.js.map",
+
+export default function Cheese(): Cheese {
+  return {cheese: 'stilton'};
+}
+",
   ],
   "version": 3,
 }
