@@ -4,7 +4,7 @@ A transformer to use for loading TypeScript files with react-native >= 0.45
 
 ## Usage
 
-    yarn add -dev react-native-typescript-transformer typescript
+    yarn add --dev react-native-typescript-transformer typescript
 
 Make sure your tsconfig.json has the following:
 
