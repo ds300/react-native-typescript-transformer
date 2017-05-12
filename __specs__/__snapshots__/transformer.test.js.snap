@@ -12,29 +12,10 @@ exports.default = Cheese;"
 
 exports[`the transformer works 2`] = `
 Object {
-  "mappings": "AAAA;;AACAA,OAAOC,cAAP,CAAsBC,OAAtB,EAA+B,YAA/B,EAA6C,EAAEC,OAAO,IAAT,EAA7C;AACA,SAASC,MAAT,GAAkB;AACd,WAAO,EAAEC,QAAQ,SAAV,EAAP;AACH;AACDH,QAAQI,OAAR,GAAkBF,MAAlB",
-  "names": Array [
-    "Object",
-    "defineProperty",
-    "exports",
-    "value",
-    "Cheese",
-    "cheese",
-    "default",
-  ],
+  "mappings": ";;;AAKA,SAAA,MAAA,GAAA;AACE,WAAO,EAAC,QAAQ,SAAT,EAAP;AACD;AAFD,QAAA,OAAA,GAAA,MAAA",
+  "names": Array [],
   "sources": Array [
     "blah.tsx",
-  ],
-  "sourcesContent": Array [
-    "
-type Cheese = {
-  readonly cheese: string
-}
-
-export default function Cheese(): Cheese {
-  return {cheese: 'stilton'};
-}
-",
   ],
   "version": 3,
 }

@@ -9,9 +9,38 @@ const TSCONFIG_PATH = process.env.TSCONFIG_PATH
 
 const { SourceMapConsumer, SourceMapGenerator } = require('source-map')
 
-function composeSourceMaps(tsMap, babelMap) {
-  const map = SourceMapGenerator.fromSourceMap(new SourceMapConsumer(babelMap))
-  map.applySourceMap(new SourceMapConsumer(tsMap))
+function composeSourceMaps(tsMap, babelMap, fileName) {
+  // applySourceMap wasn't working for me, so doing it manually
+  const map = new SourceMapGenerator()
+  const tsConsumer = new SourceMapConsumer(tsMap)
+  const babelConsumer = new SourceMapConsumer(babelMap)
+
+  babelConsumer.eachMapping(
+    ({
+      source,
+      generatedLine,
+      generatedColumn,
+      originalLine,
+      originalColumn,
+      name,
+    }) => {
+      if (originalLine) {
+        const original = tsConsumer.originalPositionFor({
+          line: originalLine,
+          column: originalColumn,
+        })
+        if (original.line) {
+          map.addMapping({
+            generated: { line: generatedLine, column: generatedColumn },
+            original: { line: original.line, column: original.column },
+            source: fileName,
+            name: null,
+          })
+        }
+      }
+    }
+  )
+
   return map.toJSON()
 }
 
@@ -41,21 +70,25 @@ const compilerOptions = Object.assign(tsConfig.compilerOptions, {
 })
 
 module.exports.transform = function(sourceCode, fileName, options) {
+  options = Object.assign({}, options, { generateSourceMaps: true })
+
   if (fileName.endsWith('.ts') || fileName.endsWith('.tsx')) {
     const tsCompileResult = ts.transpileModule(sourceCode, {
       compilerOptions,
       fileName,
     })
+
     const babelCompileResult = upstreamTransformer.transform(
       tsCompileResult.outputText,
       fileName,
-      Object.assign({}, options, { generateSourceMaps: true })
+      options
     )
 
     return Object.assign({}, babelCompileResult, {
       map: composeSourceMaps(
         tsCompileResult.sourceMapText,
-        babelCompileResult.map
+        babelCompileResult.map,
+        fileName
       ),
     })
   } else {
