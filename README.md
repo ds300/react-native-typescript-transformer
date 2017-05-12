@@ -1,13 +1,41 @@
 # react-native-typescript-transformer
 
-A transformer to use for loading TypeScript files with react-native.
+A transformer to use for loading TypeScript files with react-native >= 0.45
 
 ## Usage
 
-    yarn add -D react-native-typescript-transformer
+    yarn add -dev react-native-typescript-transformer typescript
 
-for 0.44, add `--transformer node_modules/react-native-typescript-transformer`
-to your `react-native` cli invocation, or provide an implementation for `getTransformModulePath` in `rn-cli.config.js`.
+Make sure your tsconfig.json has the following:
+
+```json
+{
+  "compilerOptions": {
+    "target": "es2015",
+    "module": "es2015",
+    "jsx": "react-native",
+    "allowSyntheticDefaultImports": true
+  }
+}
+```
+
+And add this to your rn-cli.config.json (make one if you don't have one already):
+
+```js
+module.exports = {
+  getTransformModulePath() {
+    return require.resolve('react-native-typescript-transformer')
+  },
+  getProjectRoots() {
+    return [__dirname];
+  },
+  getSourceExts() {
+    return ['ts', 'tsx'];
+  }
+}
+```
+
+And you should be you good to go!
 
 ## License
 
