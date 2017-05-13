@@ -17,6 +17,7 @@ Make sure your tsconfig.json has the following:
     "target": "es2015",
     "module": "es2015",
     "jsx": "react-native",
+    "moduleResolution": "node",
     "allowSyntheticDefaultImports": true
   }
 }
