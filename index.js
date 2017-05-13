@@ -78,7 +78,28 @@ module.exports.transform = function(sourceCode, fileName, options) {
     const tsCompileResult = ts.transpileModule(sourceCode, {
       compilerOptions,
       fileName,
+      reportDiagnostics: true,
     })
+
+    const errors = tsCompileResult.diagnostics.filter(
+      ({ category }) => category === ts.DiagnosticCategory.Error
+    )
+
+    if (errors.length) {
+      // report first error
+      const error = errors[0]
+      const message = ts.flattenDiagnosticMessageText(error.messageText, '\n')
+      if (error.file) {
+        let { line, character } = error.file.getLineAndCharacterOfPosition(
+          error.start
+        )
+        throw new Error(
+          `${error.file.fileName} (${line + 1},${character + 1}): ${message}`
+        )
+      } else {
+        throw new Error(message)
+      }
+    }
 
     const babelCompileResult = upstreamTransformer.transform(
       tsCompileResult.outputText,

@@ -16,4 +16,23 @@ describe('the transformer', () => {
     expect(result.code).toMatchSnapshot()
     expect(result.map).toMatchSnapshot()
   })
+
+  it('throws errors for bad syntax', () => {
+    expect(() => {
+      transformer.transform(badSyntaxFile, 'badSyntax.tsx', {})
+    }).toThrowErrorMatchingSnapshot()
+  })
+
+  it('does not throw errors for bad types', () => {
+    const result = transformer.transform(badTypeFile, 'badType.tsx', {})
+    expect(result.code).toMatchSnapshot()
+  })
 })
+
+const badSyntaxFile = `
+const x == 7;
+`
+
+const badTypeFile = `
+const x: boolean = 5;
+`

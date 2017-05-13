@@ -1,5 +1,13 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`the transformer does not throw errors for bad types 1`] = `
+"\\"use strict\\";
+
+var x = 5;"
+`;
+
+exports[`the transformer throws errors for bad syntax 1`] = `"badSyntax.tsx (2,9): '=' expected."`;
+
 exports[`the transformer works 1`] = `
 "\\"use strict\\";
 
