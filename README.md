@@ -23,7 +23,7 @@ Make sure your tsconfig.json has the following:
 }
 ```
 
-And add this to your rn-cli.config.json (make one if you don't have one already):
+And add this to your rn-cli.config.js (make one if you don't have one already):
 
 ```js
 module.exports = {
