@@ -2,6 +2,10 @@
 
 A transformer to use for loading TypeScript files with react-native >= 0.45
 
+It uses Babel as a secondary compilation step, because doing anything else would
+be pure pain to develop and maintain, and you wouldn't be able to use synthetic
+default imports either.
+
 ## Usage
 
     yarn add --dev react-native-typescript-transformer typescript

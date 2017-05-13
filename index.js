@@ -9,11 +9,13 @@ const TSCONFIG_PATH = process.env.TSCONFIG_PATH
 
 const { SourceMapConsumer, SourceMapGenerator } = require('source-map')
 
-function composeSourceMaps(tsMap, babelMap, fileName) {
+function composeSourceMaps(tsMap, babelMap, tsFileName, tsContent) {
   // applySourceMap wasn't working for me, so doing it manually
   const map = new SourceMapGenerator()
   const tsConsumer = new SourceMapConsumer(tsMap)
   const babelConsumer = new SourceMapConsumer(babelMap)
+
+  map.setSourceContent(tsFileName, tsContent)
 
   babelConsumer.eachMapping(
     ({
@@ -33,8 +35,8 @@ function composeSourceMaps(tsMap, babelMap, fileName) {
           map.addMapping({
             generated: { line: generatedLine, column: generatedColumn },
             original: { line: original.line, column: original.column },
-            source: fileName,
-            name: null,
+            source: tsFileName,
+            name: name,
           })
         }
       }
@@ -88,7 +90,8 @@ module.exports.transform = function(sourceCode, fileName, options) {
       map: composeSourceMaps(
         tsCompileResult.sourceMapText,
         babelCompileResult.map,
-        fileName
+        fileName,
+        sourceCode
       ),
     })
   } else {
