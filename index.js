@@ -11,37 +11,9 @@ const { SourceMapConsumer, SourceMapGenerator } = require('source-map')
 
 function composeSourceMaps(tsMap, babelMap, tsFileName, tsContent) {
   // applySourceMap wasn't working for me, so doing it manually
-  const map = new SourceMapGenerator()
-  const tsConsumer = new SourceMapConsumer(tsMap)
-  const babelConsumer = new SourceMapConsumer(babelMap)
-
+  const map = SourceMapGenerator.fromSourceMap(new SourceMapConsumer(babelMap))
+  map.applySourceMap(new SourceMapConsumer(tsMap))
   map.setSourceContent(tsFileName, tsContent)
-
-  babelConsumer.eachMapping(
-    ({
-      source,
-      generatedLine,
-      generatedColumn,
-      originalLine,
-      originalColumn,
-      name,
-    }) => {
-      if (originalLine) {
-        const original = tsConsumer.originalPositionFor({
-          line: originalLine,
-          column: originalColumn,
-        })
-        if (original.line) {
-          map.addMapping({
-            generated: { line: generatedLine, column: generatedColumn },
-            original: { line: original.line, column: original.column },
-            source: tsFileName,
-            name: name,
-          })
-        }
-      }
-    }
-  )
 
   return map.toJSON()
 }
@@ -101,9 +73,11 @@ module.exports.transform = function(sourceCode, fileName, options) {
       }
     }
 
+    const tsMap = JSON.parse(tsCompileResult.sourceMapText)
+
     const babelCompileResult = upstreamTransformer.transform(
       tsCompileResult.outputText,
-      fileName,
+      tsMap.file,
       options
     )
 
