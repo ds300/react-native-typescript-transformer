@@ -61,4 +61,4 @@ And you should be you good to go!
 
 MIT
 
-[![Empowered by Futurice's open source sponsorship program](https://img.shields.io/badge/sponsor-futurice-ff69b4.svg)](http://futurice.com/blog/sponsoring-free-time-open-source-activities?utm_source=github&utm_medium=spice&utm_campaign=patch-package)
+[![Empowered by Futurice's open source sponsorship program](https://img.shields.io/badge/sponsor-futurice-ff69b4.svg)](http://futurice.com/blog/sponsoring-free-time-open-source-activities?utm_source=github&utm_medium=spice&utm_campaign=react-native-typescript-transformer)
