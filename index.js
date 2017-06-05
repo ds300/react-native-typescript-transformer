@@ -9,6 +9,22 @@ const TSCONFIG_PATH = process.env.TSCONFIG_PATH
 
 const { SourceMapConsumer, SourceMapGenerator } = require('source-map')
 
+function loadJsonFile(jsonFilename) {
+  if (!fs.existsSync(jsonFilename)) {
+    throw new Error(`Input file not found: ${jsonFilename}`)
+  }
+
+  const buffer = fs.readFileSync(jsonFilename)
+  try {
+    let jju = require('jju')
+    return jju.parse(buffer.toString())
+  } catch (error) {
+    throw new Error(
+      `Error reading "${jsonFilename}":` + os.EOL + `  ${error.message}`
+    )
+  }
+}
+
 function composeSourceMaps(tsMap, babelMap, tsFileName, tsContent) {
   const map = new SourceMapGenerator()
   const tsConsumer = new SourceMapConsumer(tsMap)
@@ -49,7 +65,7 @@ const tsConfig = (() => {
   if (TSCONFIG_PATH) {
     const resolvedTsconfigPath = path.resolve(process.cwd(), TSCONFIG_PATH)
     if (fs.existsSync(resolvedTsconfigPath)) {
-      return require(resolvedTsconfigPath)
+      return loadJsonFile(resolvedTsconfigPath)
     }
     console.warn(
       'tsconfig file specified by TSCONFIG_PATH environment variable was not found'
@@ -60,7 +76,7 @@ const tsConfig = (() => {
   }
   const tsConfigPath = appRootPath.resolve('tsconfig.json')
   if (fs.existsSync(tsConfigPath)) {
-    return require(tsConfigPath)
+    return loadJsonFile(tsConfigPath)
   }
   throw new Error(`Unable to find tsconfig.json at ${tsConfigPath}`)
 })()
