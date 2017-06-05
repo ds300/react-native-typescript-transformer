@@ -3,6 +3,7 @@ const ts = require('typescript')
 const upstreamTransformer = require('react-native/packager/transformer')
 const fs = require('fs')
 const appRootPath = require('app-root-path')
+const os = require('os')
 const path = require('path')
 const process = require('process')
 const TSCONFIG_PATH = process.env.TSCONFIG_PATH
@@ -20,7 +21,7 @@ function loadJsonFile(jsonFilename) {
     return jju.parse(buffer.toString())
   } catch (error) {
     throw new Error(
-      `Error reading "${jsonFilename}":` + os.EOL + `  ${error.message}`
+      `Error reading "${jsonFilename}":${os.EOL}  ${error.message}`
     )
   }
 }
