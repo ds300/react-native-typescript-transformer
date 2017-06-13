@@ -32,7 +32,7 @@ Make sure your tsconfig.json has the following:
 
 `"module"` can be `"commonjs"` if you don't care about allowing synthetic default imports (in which case that field can also be `false`)
 
-`"target"` can probably be anythhing supported by your babel setup, I suppose.
+`"target"` can probably be anything supported by your babel setup, I suppose.
 
 `"jsx"` can also be `"preserve"`, they are functionally identical if you don't emit files.
 
