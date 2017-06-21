@@ -1,6 +1,7 @@
 'use strict'
 const ts = require('typescript')
 const upstreamTransformer = require('react-native/packager/transformer')
+const { fromRawMappings } = require('react-native/packager/src/Bundler/source-map')
 const fs = require('fs')
 const appRootPath = require('app-root-path')
 const os = require('os')
@@ -26,13 +27,21 @@ function loadJsonFile(jsonFilename) {
   }
 }
 
-function composeSourceMaps(tsMap, babelMap, tsFileName, tsContent) {
-  const map = new SourceMapGenerator()
+function composeSourceMaps(tsMap, babelMap, tsFileName, tsContent, babelCode) {
   const tsConsumer = new SourceMapConsumer(tsMap)
+  const useRawMapping = Array.isArray(babelMap)
+  if (useRawMapping) {
+    babelMap = fromRawMappings([{
+      sourcePath: tsFileName,
+      sourceCode: tsContent,
+      code: babelCode,
+      map: babelMap
+    }]).toMap()
+  }
   const babelConsumer = new SourceMapConsumer(babelMap)
-
+  const rawMapping = []
+  const map = new SourceMapGenerator()
   map.setSourceContent(tsFileName, tsContent)
-
   babelConsumer.eachMapping(
     ({
       source,
@@ -40,26 +49,33 @@ function composeSourceMaps(tsMap, babelMap, tsFileName, tsContent) {
       generatedColumn,
       originalLine,
       originalColumn,
-      name,
+      name
     }) => {
       if (originalLine) {
         const original = tsConsumer.originalPositionFor({
           line: originalLine,
-          column: originalColumn,
+          column: originalColumn
         })
         if (original.line) {
-          map.addMapping({
-            generated: { line: generatedLine, column: generatedColumn },
-            original: { line: original.line, column: original.column },
-            source: tsFileName,
-            name: name,
-          })
+          if (useRawMapping) {
+            if (typeof name !== 'string') {
+              rawMapping.push([generatedLine, generatedColumn, original.line, original.column])
+            } else {
+              rawMapping.push([generatedLine, generatedColumn, original.line, original.column, name])
+            }
+          } else {
+            map.addMapping({
+              generated: { line: generatedLine, column: generatedColumn },
+              original: { line: original.line, column: original.column },
+              source: tsFileName,
+              name: name
+            })
+          }
         }
       }
     }
   )
-
-  return map.toJSON()
+  return useRawMapping ? rawMapping : map.toJSON()
 }
 
 const tsConfig = (() => {
@@ -84,17 +100,15 @@ const tsConfig = (() => {
 
 const compilerOptions = Object.assign(tsConfig.compilerOptions, {
   sourceMap: true,
-  inlineSources: true,
+  inlineSources: true
 })
 
-module.exports.transform = function(sourceCode, fileName, options) {
-  options = Object.assign({}, options, { generateSourceMaps: true })
-
+module.exports.transform = function (sourceCode, fileName, options) {
   if (fileName.endsWith('.ts') || fileName.endsWith('.tsx')) {
     const tsCompileResult = ts.transpileModule(sourceCode, {
       compilerOptions,
       fileName,
-      reportDiagnostics: true,
+      reportDiagnostics: true
     })
 
     const errors = tsCompileResult.diagnostics.filter(
@@ -128,7 +142,8 @@ module.exports.transform = function(sourceCode, fileName, options) {
         tsCompileResult.sourceMapText,
         babelCompileResult.map,
         fileName,
-        sourceCode
+        sourceCode,
+        babelCompileResult.code
       ),
     })
   } else {
