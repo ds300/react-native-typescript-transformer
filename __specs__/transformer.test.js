@@ -12,7 +12,9 @@ const transformer = require('../')
 
 describe('the transformer', () => {
   it('works', () => {
-    const result = transformer.transform(file, 'blah.tsx', {})
+    const result = transformer.transform(file, 'blah.tsx', {
+      generateSourceMaps: true,
+    })
     expect(result.code).toMatchSnapshot()
     expect(result.map).toMatchSnapshot()
   })
