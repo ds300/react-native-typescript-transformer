@@ -28,7 +28,7 @@ Make sure your tsconfig.json has the following:
 }
 ```
 
-# Step 3: Write TypeScript code :D
+### Step 3: Write TypeScript code :D
 
 Note that the platform-specific index files (index.ios.js, index.android.js, etc)
 still need to be .js files, but everything else can be TypeScript.
