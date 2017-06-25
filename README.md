@@ -28,6 +28,11 @@ Make sure your tsconfig.json has the following:
 }
 ```
 
+# Step 3: Write TypeScript code :D
+
+Note that the platform-specific index files (index.ios.js, index.android.js, etc)
+still need to be .js files, but everything else can be TypeScript.
+
 #### Notes
 
 `"module"` can be `"commonjs"` if you don't care about allowing synthetic default imports (in which case that field can also be `false`)
