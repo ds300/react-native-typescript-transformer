@@ -1,6 +1,6 @@
 {
   "name": "react-native-typescript-transformer",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "description": "TypeScript transformer for react-native",
   "main": "index.js",
   "repository": "https://github.com/ds300/react-native-typescript-transformer",
