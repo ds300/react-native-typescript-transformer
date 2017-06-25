@@ -1,9 +1,6 @@
 'use strict'
 const ts = require('typescript')
 const upstreamTransformer = require('react-native/packager/transformer')
-const {
-  fromRawMappings,
-} = require('react-native/packager/src/Bundler/source-map')
 const fs = require('fs')
 const appRootPath = require('app-root-path')
 const os = require('os')
@@ -29,21 +26,43 @@ function loadJsonFile(jsonFilename) {
   }
 }
 
+function composeRawSourceMap(tsMap, babelMap) {
+  const tsConsumer = new SourceMapConsumer(tsMap)
+  const composedMap = []
+  babelMap.forEach(
+    ([generatedLine, generatedColumn, originalLine, originalColumn, name]) => {
+      if (originalLine) {
+        const tsOriginal = tsConsumer.originalPositionFor({
+          line: originalLine,
+          column: originalColumn,
+        })
+        if (tsOriginal.line) {
+          if (typeof name === 'string') {
+            composedMap.push([
+              generatedLine,
+              generatedColumn,
+              tsOriginal.line,
+              tsOriginal.column,
+              name,
+            ])
+          } else {
+            composedMap.push([
+              generatedLine,
+              generatedColumn,
+              tsOriginal.line,
+              tsOriginal.column,
+            ])
+          }
+        }
+      }
+    }
+  )
+  return composedMap
+}
+
 function composeSourceMaps(tsMap, babelMap, tsFileName, tsContent, babelCode) {
   const tsConsumer = new SourceMapConsumer(tsMap)
-  const useRawMapping = Array.isArray(babelMap)
-  if (useRawMapping) {
-    babelMap = fromRawMappings([
-      {
-        sourcePath: tsFileName,
-        sourceCode: tsContent,
-        code: babelCode,
-        map: babelMap,
-      },
-    ]).toMap()
-  }
   const babelConsumer = new SourceMapConsumer(babelMap)
-  const rawMapping = []
   const map = new SourceMapGenerator()
   map.setSourceContent(tsFileName, tsContent)
   babelConsumer.eachMapping(
@@ -61,36 +80,17 @@ function composeSourceMaps(tsMap, babelMap, tsFileName, tsContent, babelCode) {
           column: originalColumn,
         })
         if (original.line) {
-          if (useRawMapping) {
-            if (typeof name !== 'string') {
-              rawMapping.push([
-                generatedLine,
-                generatedColumn,
-                original.line,
-                original.column,
-              ])
-            } else {
-              rawMapping.push([
-                generatedLine,
-                generatedColumn,
-                original.line,
-                original.column,
-                name,
-              ])
-            }
-          } else {
-            map.addMapping({
-              generated: { line: generatedLine, column: generatedColumn },
-              original: { line: original.line, column: original.column },
-              source: tsFileName,
-              name: name,
-            })
-          }
+          map.addMapping({
+            generated: { line: generatedLine, column: generatedColumn },
+            original: { line: original.line, column: original.column },
+            source: tsFileName,
+            name: name,
+          })
         }
       }
     }
   )
-  return useRawMapping ? rawMapping : map.toJSON()
+  return map.toJSON()
 }
 
 const tsConfig = (() => {
@@ -152,14 +152,21 @@ module.exports.transform = function(sourceCode, fileName, options) {
       options
     )
 
+    const composedMap = Array.isArray(babelCompileResult.map)
+      ? composeRawSourceMap(
+          tsCompileResult.sourceMapText,
+          babelCompileResult.map
+        )
+      : composeSourceMaps(
+          tsCompileResult.sourceMapText,
+          babelCompileResult.map,
+          fileName,
+          sourceCode,
+          babelCompileResult.code
+        )
+
     return Object.assign({}, babelCompileResult, {
-      map: composeSourceMaps(
-        tsCompileResult.sourceMapText,
-        babelCompileResult.map,
-        fileName,
-        sourceCode,
-        babelCompileResult.code
-      ),
+      map: composedMap,
     })
   } else {
     return upstreamTransformer.transform(sourceCode, fileName, options)

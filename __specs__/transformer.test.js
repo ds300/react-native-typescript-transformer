@@ -11,10 +11,16 @@ export default function Cheese(): Cheese {
 const transformer = require('../')
 
 describe('the transformer', () => {
-  it('works', () => {
+  it('works for production mode', () => {
     const result = transformer.transform(file, 'blah.tsx', {
       generateSourceMaps: true,
     })
+    expect(result.code).toMatchSnapshot()
+    expect(result.map).toMatchSnapshot()
+  })
+
+  it('works for dev mode', () => {
+    const result = transformer.transform(file, 'blah.tsx')
     expect(result.code).toMatchSnapshot()
     expect(result.map).toMatchSnapshot()
   })

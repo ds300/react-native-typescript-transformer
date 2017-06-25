@@ -8,7 +8,7 @@ var x = 5;"
 
 exports[`the transformer throws errors for bad syntax 1`] = `"badSyntax.tsx (2,9): '=' expected."`;
 
-exports[`the transformer works 1`] = `
+exports[`the transformer works for dev mode 1`] = `
 "\\"use strict\\";
 
 Object.defineProperty(exports, \\"__esModule\\", { value: true });
@@ -18,7 +18,123 @@ function Cheese() {
 exports.default = Cheese;"
 `;
 
-exports[`the transformer works 2`] = `
+exports[`the transformer works for dev mode 2`] = `
+Array [
+  Array [
+    4,
+    0,
+    6,
+    0,
+  ],
+  Array [
+    4,
+    9,
+    6,
+    0,
+    "Cheese",
+  ],
+  Array [
+    4,
+    15,
+    6,
+    0,
+  ],
+  Array [
+    4,
+    18,
+    6,
+    0,
+  ],
+  Array [
+    5,
+    0,
+    7,
+    2,
+  ],
+  Array [
+    5,
+    11,
+    7,
+    9,
+  ],
+  Array [
+    5,
+    13,
+    7,
+    10,
+    "cheese",
+  ],
+  Array [
+    5,
+    21,
+    7,
+    18,
+  ],
+  Array [
+    5,
+    30,
+    7,
+    9,
+  ],
+  Array [
+    5,
+    32,
+    7,
+    2,
+  ],
+  Array [
+    6,
+    0,
+    8,
+    1,
+  ],
+  Array [
+    7,
+    0,
+    6,
+    0,
+    "exports",
+  ],
+  Array [
+    7,
+    8,
+    6,
+    0,
+    "default",
+  ],
+  Array [
+    7,
+    15,
+    6,
+    0,
+  ],
+  Array [
+    7,
+    18,
+    6,
+    0,
+    "Cheese",
+  ],
+  Array [
+    7,
+    24,
+    6,
+    0,
+  ],
+]
+`;
+
+exports[`the transformer works for production mode 1`] = `
+"\\"use strict\\";
+
+Object.defineProperty(exports, \\"__esModule\\", { value: true });
+function Cheese() {
+    return { cheese: 'stilton' };
+}
+exports.default = Cheese;"
+`;
+
+exports[`the transformer works for production mode 2`] = `
 Object {
   "mappings": ";;;AAKA,SAAAA,MAAA,GAAA;AACE,WAAO,EAACC,QAAQ,SAAT,EAAP;AACD;AAFDC,QAAAC,OAAA,GAAAH,MAAA",
   "names": Array [
