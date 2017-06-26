@@ -51,7 +51,7 @@ module.exports = {
 }
 ```
 
-If you are using **create-react-native-app** You need to tell react-native-scripts to look for the
+If you are using **create-react-native-app** You need to tell Expo to look for the
 cli config file. Add the `packagerOpts.config` property to your app.json, e.g.
 
 ```json
