@@ -1,6 +1,6 @@
 'use strict'
 const ts = require('typescript')
-const upstreamTransformer = require('react-native/packager/transformer')
+const upstreamTransformer = require('metro-bundler/src/transformer')
 const fs = require('fs')
 const appRootPath = require('app-root-path')
 const os = require('os')
@@ -146,11 +146,11 @@ module.exports.transform = function(sourceCode, fileName, options) {
       }
     }
 
-    const babelCompileResult = upstreamTransformer.transform(
-      tsCompileResult.outputText,
-      fileName,
-      options
-    )
+    const babelCompileResult = upstreamTransformer.transform({
+      src: tsCompileResult.outputText,
+      filename: fileName,
+      options,
+    })
 
     const composedMap = Array.isArray(babelCompileResult.map)
       ? composeRawSourceMap(
@@ -169,6 +169,10 @@ module.exports.transform = function(sourceCode, fileName, options) {
       map: composedMap,
     })
   } else {
-    return upstreamTransformer.transform(sourceCode, fileName, options)
+    return upstreamTransformer.transform({
+      src: sourceCode,
+      filename: fileName,
+      options,
+    })
   }
 }
