@@ -28,11 +28,6 @@ Make sure your tsconfig.json has the following:
 }
 ```
 
-### Step 3: Write TypeScript code :D
-
-Note that the platform-specific index files (index.ios.js, index.android.js, etc)
-still need to be .js files, but everything else can be TypeScript.
-
 #### Notes
 
 `"module"` can be `"commonjs"` if you don't care about allowing synthetic default imports (in which case that field can also be `false`)
@@ -56,11 +51,29 @@ module.exports = {
 }
 ```
 
-Alternatively, pass these cli args when you start the packager:
+If you are using **create-react-native-app** You need to tell react-native-scripts to look for the
+cli config file. Add the `packagerOpts.config` property to your app.json, e.g.
+
+```json
+{
+  "expo": {
+    "sdkVersion": "18.0.0",
+    "packagerOpts": {
+      "config": "rn-cli.config.js"
+    }
+  }
+}
+```
+
+If you need to run the packager directly from the command line, pass these
 
     --transformer node_modules/react-native-typescript-transformer --sourceExts ts,tsx
 
-And you should be you good to go!
+### Step 4: Write TypeScript code :D
+
+Note that the platform-specific index files (index.ios.js, index.android.js, etc)
+still need to be .js files, but everything else can be TypeScript.
+
 
 ## License
 
