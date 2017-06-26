@@ -1,12 +1,25 @@
 'use strict'
 const ts = require('typescript')
-const upstreamTransformer = require('metro-bundler/src/transformer')
 const fs = require('fs')
 const appRootPath = require('app-root-path')
 const os = require('os')
 const path = require('path')
 const process = require('process')
 const TSCONFIG_PATH = process.env.TSCONFIG_PATH
+var upstreamTransformer = null
+try {
+  upstreamTransformer = require('metro-bundler/src/transformer')
+} catch (e) {
+  upstreamTransformer = {
+    transform: function(ref) {
+      return require('react-native/packager/transformer').transform(
+        ref.src,
+        ref.filename,
+        ref.options
+      )
+    },
+  }
+}
 
 const { SourceMapConsumer, SourceMapGenerator } = require('source-map')
 
