@@ -132,10 +132,18 @@ const compilerOptions = Object.assign(tsConfig.compilerOptions, {
 })
 
 module.exports.transform = function(sourceCode, fileName, options) {
-  if (fileName.endsWith('.ts') || fileName.endsWith('.tsx')) {
-    const tsCompileResult = ts.transpileModule(sourceCode, {
+  var mapArguments = { src: sourceCode, filename: fileName, options }
+  if (typeof sourceCode === 'object') {
+    mapArguments = sourceCode
+  }
+
+  if (
+    mapArguments.filename.endsWith('.ts') ||
+    mapArguments.filename.endsWith('.tsx')
+  ) {
+    const tsCompileResult = ts.transpileModule(mapArguments.src, {
       compilerOptions,
-      fileName,
+      filename: mapArguments.filename,
       reportDiagnostics: true,
     })
 
@@ -161,8 +169,8 @@ module.exports.transform = function(sourceCode, fileName, options) {
 
     const babelCompileResult = upstreamTransformer.transform({
       src: tsCompileResult.outputText,
-      filename: fileName,
-      options,
+      filename: mapArguments.filename,
+      options: mapArguments.options,
     })
 
     const composedMap = Array.isArray(babelCompileResult.map)
@@ -173,8 +181,8 @@ module.exports.transform = function(sourceCode, fileName, options) {
       : composeSourceMaps(
           tsCompileResult.sourceMapText,
           babelCompileResult.map,
-          fileName,
-          sourceCode,
+          mapArguments.filename,
+          mapArguments.src,
           babelCompileResult.code
         )
 
@@ -182,10 +190,6 @@ module.exports.transform = function(sourceCode, fileName, options) {
       map: composedMap,
     })
   } else {
-    return upstreamTransformer.transform({
-      src: sourceCode,
-      filename: fileName,
-      options,
-    })
+    return upstreamTransformer.transform(mapArguments)
   }
 }
