@@ -10,13 +10,11 @@ var upstreamTransformer = null
 try {
   upstreamTransformer = require('metro-bundler/src/transformer')
 } catch (e) {
+  // handle RN <= 0.45
+  const oldUpstreamTransformer = require('react-native/packager/transformer')
   upstreamTransformer = {
-    transform: function(ref) {
-      return require('react-native/packager/transformer').transform(
-        ref.src,
-        ref.filename,
-        ref.options
-      )
+    transform({ src, filename, options }) {
+      return oldUpstreamTransformer.transform(src, filename, options)
     },
   }
 }
@@ -131,19 +129,16 @@ const compilerOptions = Object.assign(tsConfig.compilerOptions, {
   inlineSources: true,
 })
 
-module.exports.transform = function(sourceCode, fileName, options) {
-  var mapArguments = { src: sourceCode, filename: fileName, options }
-  if (typeof sourceCode === 'object') {
-    mapArguments = sourceCode
+module.exports.transform = function(src, filename, options) {
+  if (typeof src === 'object') {
+    // handle RN >= 0.46
+    ;({ src, filename, options } = src)
   }
 
-  if (
-    mapArguments.filename.endsWith('.ts') ||
-    mapArguments.filename.endsWith('.tsx')
-  ) {
-    const tsCompileResult = ts.transpileModule(mapArguments.src, {
+  if (filename.endsWith('.ts') || filename.endsWith('.tsx')) {
+    const tsCompileResult = ts.transpileModule(src, {
       compilerOptions,
-      filename: mapArguments.filename,
+      filename: filename,
       reportDiagnostics: true,
     })
 
@@ -169,8 +164,8 @@ module.exports.transform = function(sourceCode, fileName, options) {
 
     const babelCompileResult = upstreamTransformer.transform({
       src: tsCompileResult.outputText,
-      filename: mapArguments.filename,
-      options: mapArguments.options,
+      filename,
+      options,
     })
 
     const composedMap = Array.isArray(babelCompileResult.map)
@@ -181,8 +176,8 @@ module.exports.transform = function(sourceCode, fileName, options) {
       : composeSourceMaps(
           tsCompileResult.sourceMapText,
           babelCompileResult.map,
-          mapArguments.filename,
-          mapArguments.src,
+          filename,
+          src,
           babelCompileResult.code
         )
 
@@ -190,6 +185,6 @@ module.exports.transform = function(sourceCode, fileName, options) {
       map: composedMap,
     })
   } else {
-    return upstreamTransformer.transform(mapArguments)
+    return upstreamTransformer.transform({ src, filename, options })
   }
 }
