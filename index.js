@@ -138,7 +138,7 @@ module.exports.transform = function(src, filename, options) {
   if (filename.endsWith('.ts') || filename.endsWith('.tsx')) {
     const tsCompileResult = ts.transpileModule(src, {
       compilerOptions,
-      filename: filename,
+      fileName: filename,
       reportDiagnostics: true,
     })
 
@@ -154,6 +154,9 @@ module.exports.transform = function(src, filename, options) {
         let { line, character } = error.file.getLineAndCharacterOfPosition(
           error.start
         )
+        if (error.file.fileName === 'module.ts') {
+          console.error({ error, filename, options })
+        }
         throw new Error(
           `${error.file.fileName} (${line + 1},${character + 1}): ${message}`
         )
