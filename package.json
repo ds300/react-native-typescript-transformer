@@ -9,11 +9,11 @@
   "dependencies": {
     "app-root-path": "^2.0.1",
     "jju": "^1.3.0",
-    "source-map": "^0.5.6",
-    "typescript": "^2.3.2"
+    "source-map": "^0.5.6"
   },
   "peerDependencies": {
-    "react-native": ">=0.45.0"
+    "react-native": ">=0.45.0",
+    "typescript": ">=2"
   },
   "scripts": {
     "precommit": "lint-staged",
@@ -41,7 +41,8 @@
     "metro-bundler": "^0.9.0",
     "np": "^2.15.0",
     "prettier": "^1.3.1",
-    "react-native": "^0.45.1"
+    "react-native": "^0.45.1",
+    "typescript": "^2.3.2"
   },
   "jest": {
     "preset": "react-native",

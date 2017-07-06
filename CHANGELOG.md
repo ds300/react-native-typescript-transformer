@@ -1,3 +1,7 @@
+## 1.1.2
+
+Make typescript a peer dependency of react-native-typescript-transformer
+
 ## 1.1.1
 
 Amend support for react-native >= 0.46 in light of metro-bundler changes
