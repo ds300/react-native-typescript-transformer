@@ -1,3 +1,8 @@
+## 1.1.1
+
+Amend support for react-native >= 0.46 in light of metro-bundler changes
+before the final 0.46.0 was released.
+
 ## 1.1.0
 
 Add tentative support for react-native >= 0.46, which uses the external
