@@ -65,9 +65,9 @@ cli config file. Add the `packagerOpts.config` property to your app.json, e.g.
 }
 ```
 
-If you need to run the packager directly from the command line, pass these
+If you need to run the packager directly from the command line, run the following
 
-    --transformer node_modules/react-native-typescript-transformer --sourceExts ts,tsx
+    react-native start --transformer node_modules/react-native-typescript-transformer/index.js --sourceExts ts,tsx
 
 ### Step 4: Write TypeScript code :D
 
