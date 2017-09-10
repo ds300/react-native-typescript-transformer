@@ -1,3 +1,7 @@
+## 1.1.4
+
+Improve README.md
+
 ## 1.1.3
 
 Add support for RN => 0.47
