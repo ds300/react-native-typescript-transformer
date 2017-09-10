@@ -1,10 +1,6 @@
 # react-native-typescript-transformer
 
-A transformer to use for loading TypeScript files with react-native >= 0.45
-
-It currently uses Babel as a secondary compilation step for simplicity's sake, and to
-enable synthetic default imports. A planned feature is to allow bypassing babel
-for people who don't use synthetic default imports.
+Seamlessly use TypeScript with react-native >= 0.45
 
 ## Usage
 
@@ -14,27 +10,23 @@ for people who don't use synthetic default imports.
 
 ### Step 2: Configure TypeScript
 
-Make sure your tsconfig.json has the following:
+Make sure your tsconfig.json has these compiler options:
 
 ```json
 {
   "compilerOptions": {
     "target": "es2015",
-    "module": "es2015",
-    "jsx": "react-native",
+    "jsx": "react",
+    "noEmit": true,
     "moduleResolution": "node",
-    "allowSyntheticDefaultImports": true
-  }
+  },
+  "exclude": [
+    "node_modules"
+  ]
 }
 ```
 
-#### Notes
-
-`"module"` can be `"commonjs"` if you don't care about allowing synthetic default imports (in which case that field can also be `false`)
-
-`"target"` can probably be anything supported by your babel setup, I suppose.
-
-`"jsx"` can also be `"preserve"`, they are functionally identical if you don't emit files.
+See [tsconfig.json Notes](#tsconfigjson-notes) for more advanced configuration details.
 
 ### Step 3: Configure the react native packager
 
@@ -51,28 +43,108 @@ module.exports = {
 }
 ```
 
-If you are using **create-react-native-app** You need to tell Expo to look for the
-cli config file. Add the `packagerOpts.config` property to your app.json, e.g.
-
-```json
-{
-  "expo": {
-    "sdkVersion": "18.0.0",
-    "packagerOpts": {
-      "config": "rn-cli.config.js"
-    }
-  }
-}
-```
-
 If you need to run the packager directly from the command line, run the following
 
     react-native start --transformer node_modules/react-native-typescript-transformer/index.js --sourceExts ts,tsx
+    
 
-### Step 4: Write TypeScript code :D
+### Step 4: Write TypeScript code!
 
 Note that the platform-specific index files (index.ios.js, index.android.js, etc)
 still need to be .js files, but everything else can be TypeScript.
+
+You probably want typings for react and react-native
+
+    yarn add --dev @types/react @types/react-native
+
+Note that if you run `yarn tsc` it will act as a type checker rather than a compiler. Run it with `--watch` to catch dev-time errors in all files, not just the one you're editing.
+
+### Use tslib (Optional)
+
+    yarn add tslib
+
+in tsconfig.json
+
+```patch
+ {
+   "compilerOptions": {
++    "importHelpers": true,
+   }
+ }
+```
+
+Doing this should reduce your bundle size. See [this blog post](https://blog.mariusschulz.com/2016/12/16/typescript-2-1-external-helpers-library) for more details.
+
+### Use absolute paths (Optional)
+
+Absolute paths needs to have support from both the TypeScript compiler and the react-native packager.
+
+This section will show you how to work with project structures like this:
+
+```
+<rootDir>
+├── src
+│   ├── package.json
+│   ├── App.tsx
+│   ├── components
+│   │   ├── Banana.tsx
+│   ├── index.tsx
+├── index.ios.js
+├── package.json
+├── tsconfig.json
+```
+
+Where you want to be able to `import Banana from 'src/components/Banana'` from any .ts(x) file, regardless of its place in the directory tree.
+
+#### TypeScript
+
+In `tsconfig.json`:
+
+```patch
+ {
+   "compilerOptions": {
++    "baseUrl": "."
+   }
+ }
+```
+
+#### react-native
+
+For react-native you need to add one or more `package.json` files. These only need to contain the `"name"` field, and should be placed into any folders in the root of your project that you want to reference with an absolute path. The `"name"` field's value should be the name of the folder.  So for me, I just added one file at `src/package.json` with the contents `{"name": "src"}`.
+
+#### Jest (Optional)
+
+If you use Jest as a test runner, add the following in your root package.json:
+
+```patch
+ {
+   "jest" {
++     "modulePaths": ["<rootDir>"]
+   }
+ }
+```
+
+## tsconfig.json Notes
+
+- If you enable synthetic default imports with the `"allowSyntheticDefaultImports"` flag, be sure to set `"module"` to something like "es2015" to allow the es6 import/export syntax to pass through the TypeScript compiler untouched. Then Babel can compile those statements while emitting the necessary extra code to make synthetic default imports work properly.
+
+  This is neccessary until TypeScript implements suport for synthetic default imports in emitted code as well as in the type checker. See [Microsoft/TypeScript#9562](https://github.com/Microsoft/TypeScript/issues/9562).
+
+- `"target"` can be anything supported by your project's Babel configuration.
+
+- `"jsx"` can also be `"react-native"` or `"preserve"`, which are functionally identical in the context of a react-native-typescript-transformer project. In this case, the JSX syntax is compiled by Babel instead of TypeScript
+
+- The source map options are not useful
+
+- You probably want to specify some base typings with the `"lib"` option. I've had success with the following:
+
+  ```patch
+   {
+     "compilerOptions": {
+  +    "lib": [ "dom", "es2015", "es2016" ],
+     }
+   }
+  ```
 
 
 ## License
