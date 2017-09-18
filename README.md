@@ -146,6 +146,13 @@ If you use Jest as a test runner, add the following in your root package.json:
    }
   ```
 
+## Jest notes
+
+Follow the react-native setup guide for [ts-jest](https://github.com/kulshekhar/ts-jest).
+
+Alternatively, if you want to use exactly the same transformation code for both Jest and react-native check out [this comment](https://github.com/ds300/react-native-typescript-transformer/issues/21#issuecomment-330148700).
+
+Note that there have been no reports of problems arising from differences between code compiled by the `ts-jest` transformer and code compiled by `react-native-typescript-transformer`. Additionally, `ts-jest` takes care of a lot of edge cases and is more configurable.
 
 ## License
 
