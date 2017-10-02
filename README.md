@@ -154,6 +154,14 @@ Alternatively, if you want to use exactly the same transformation code for both 
 
 Note that there have been no reports of problems arising from differences between code compiled by the `ts-jest` transformer and code compiled by `react-native-typescript-transformer`. Additionally, `ts-jest` takes care of a lot of edge cases and is more configurable.
 
+## Avoid cyclical dependencies
+
+If you're transitioning an app from `tsc` to `react-native-typescript-transformer`, you might be seeing runtime errors that involve imported modules being `undefined`. You almost certainly have cyclical inter-module dependencies which manifest during your app's initialization. e.g. if ModuleA is `undefined` in ModuleB it means that ModolueA (in)directly imports ModuleB.
+
+`tsc` seems to be able to mitigate some instances of these cyclical dependencies when used as a whole-app compiler. Unfortunately the module-at-a-time compilation approach that react-native's bundler supports does not permit the same optimizations.
+
+Be especially careful of "umbrella export" files which can easily introduce these cycles.
+
 ## License
 
 MIT
