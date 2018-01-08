@@ -10,19 +10,24 @@ const TSCONFIG_PATH = process.env.TSCONFIG_PATH
 let upstreamTransformer = null
 
 try {
-  // handle RN >= 0.47
-  upstreamTransformer = require('metro-bundler/src/transformer')
+  // handle RN >= 0.52
+  upstreamTransformer = require("metro/src/transformer");
 } catch (e) {
   try {
-    // handle RN 0.46
-    upstreamTransformer = require('metro-bundler/build/transformer')
+    // handle RN >= 0.47
+    upstreamTransformer = require('metro-bundler/src/transformer')
   } catch (e) {
-    // handle RN <= 0.45
-    const oldUpstreamTransformer = require('react-native/packager/transformer')
-    upstreamTransformer = {
-      transform({ src, filename, options }) {
-        return oldUpstreamTransformer.transform(src, filename, options)
-      },
+    try {
+      // handle RN 0.46
+      upstreamTransformer = require('metro-bundler/build/transformer')
+    } catch (e) {
+      // handle RN <= 0.45
+      const oldUpstreamTransformer = require('react-native/packager/transformer')
+      upstreamTransformer = {
+        transform({ src, filename, options }) {
+          return oldUpstreamTransformer.transform(src, filename, options)
+        },
+      }
     }
   }
 }
