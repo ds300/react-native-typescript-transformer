@@ -8,8 +8,10 @@ const process = require('process')
 const TSCONFIG_PATH = process.env.TSCONFIG_PATH
 
 let upstreamTransformer = null
+let fiftyTwo = false
 
 try {
+  fiftyTwo = true
   // handle RN >= 0.52
   upstreamTransformer = require('metro/src/transformer')
 } catch (e) {
@@ -193,6 +195,10 @@ module.exports.transform = function(src, filename, options) {
       filename,
       options,
     })
+
+    if (fiftyTwo || !babelCompileResult.map) {
+      return babelCompileResult
+    }
 
     const composedMap = Array.isArray(babelCompileResult.map)
       ? composeRawSourceMap(
