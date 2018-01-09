@@ -5,32 +5,27 @@ const appRootPath = require('app-root-path')
 const os = require('os')
 const path = require('path')
 const process = require('process')
+const semver = require('semver')
 const TSCONFIG_PATH = process.env.TSCONFIG_PATH
 
 let upstreamTransformer = null
-let fiftyTwo = false
 
-try {
-  fiftyTwo = true
-  // handle RN >= 0.52
+const reactNativeVersionString = require('react-native/package.json').version
+const reactNativeMinorVersion = semver(reactNativeVersionString).minor
+
+if (reactNativeMinorVersion >= 52) {
   upstreamTransformer = require('metro/src/transformer')
-} catch (e) {
-  try {
-    // handle RN >= 0.47
-    upstreamTransformer = require('metro-bundler/src/transformer')
-  } catch (e) {
-    try {
-      // handle RN 0.46
-      upstreamTransformer = require('metro-bundler/build/transformer')
-    } catch (e) {
-      // handle RN <= 0.45
-      const oldUpstreamTransformer = require('react-native/packager/transformer')
-      upstreamTransformer = {
-        transform({ src, filename, options }) {
-          return oldUpstreamTransformer.transform(src, filename, options)
-        },
-      }
-    }
+} else if (reactNativeMinorVersion >= 0.47) {
+  upstreamTransformer = require('metro-bundler/src/transformer')
+} else if (reactNativeMinorVersion === 0.46) {
+  upstreamTransformer = require('metro-bundler/build/transformer')
+} else {
+  // handle RN <= 0.45
+  const oldUpstreamTransformer = require('react-native/packager/transformer')
+  upstreamTransformer = {
+    transform({ src, filename, options }) {
+      return oldUpstreamTransformer.transform(src, filename, options)
+    },
   }
 }
 
@@ -196,7 +191,7 @@ module.exports.transform = function(src, filename, options) {
       options,
     })
 
-    if (fiftyTwo || !babelCompileResult.map) {
+    if (reactNativeMinorVersion >= 52) {
       return babelCompileResult
     }
 
