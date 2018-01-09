@@ -11,7 +11,7 @@ let upstreamTransformer = null
 
 try {
   // handle RN >= 0.52
-  upstreamTransformer = require("metro/src/transformer");
+  upstreamTransformer = require('metro/src/transformer')
 } catch (e) {
   try {
     // handle RN >= 0.47
@@ -105,8 +105,14 @@ function composeSourceMaps(tsMap, babelMap, tsFileName, tsContent, babelCode) {
         })
         if (original.line) {
           map.addMapping({
-            generated: { line: generatedLine, column: generatedColumn },
-            original: { line: original.line, column: original.column },
+            generated: {
+              line: generatedLine,
+              column: generatedColumn,
+            },
+            original: {
+              line: original.line,
+              column: original.column,
+            },
             source: tsFileName,
             name: name,
           })
@@ -168,7 +174,11 @@ module.exports.transform = function(src, filename, options) {
           error.start
         )
         if (error.file.fileName === 'module.ts') {
-          console.error({ error, filename, options })
+          console.error({
+            error,
+            filename,
+            options,
+          })
         }
         throw new Error(
           `${error.file.fileName} (${line + 1},${character + 1}): ${message}`
@@ -201,6 +211,10 @@ module.exports.transform = function(src, filename, options) {
       map: composedMap,
     })
   } else {
-    return upstreamTransformer.transform({ src, filename, options })
+    return upstreamTransformer.transform({
+      src,
+      filename,
+      options,
+    })
   }
 }
