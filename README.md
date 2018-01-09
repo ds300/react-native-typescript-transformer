@@ -2,6 +2,8 @@
 
 Seamlessly use TypeScript with react-native >= 0.45
 
+⚠️ source maps in react-native >= 0.52 are broken — see [#39](https://github.com/ds300/react-native-typescript-transformer/issues/39) for the latest developments
+
 ## Usage
 
 ### Step 1: Install
@@ -46,7 +48,7 @@ module.exports = {
 If you need to run the packager directly from the command line, run the following
 
     react-native start --transformer node_modules/react-native-typescript-transformer/index.js --sourceExts ts,tsx
-    
+
 
 ### Step 4: Write TypeScript code!
 

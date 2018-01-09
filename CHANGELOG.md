@@ -1,5 +1,11 @@
 ## 1.1.4
 
+Add basic support for RN >= 0.52
+
+Contribution by @olofd
+
+## 1.1.4
+
 Improve README.md
 
 ## 1.1.3
