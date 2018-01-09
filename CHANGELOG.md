@@ -1,8 +1,12 @@
-## 1.1.4
+## 1.1.6
 
 Add basic support for RN >= 0.52
 
 Contribution by @olofd
+
+## 1.1.5
+
+Borked publish, do not use.
 
 ## 1.1.4
 
