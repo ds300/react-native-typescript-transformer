@@ -6,6 +6,8 @@ const os = require('os')
 const path = require('path')
 const process = require('process')
 const semver = require('semver')
+const traverse = require('babel-traverse')
+
 const TSCONFIG_PATH = process.env.TSCONFIG_PATH
 
 let upstreamTransformer = null
@@ -45,6 +47,25 @@ function loadJsonFile(jsonFilename) {
       `Error reading "${jsonFilename}":${os.EOL}  ${error.message}`
     )
   }
+}
+
+// only used with RN >= 52
+function sourceMapAstInPlace(tsMap, babelAst) {
+  const tsConsumer = new SourceMapConsumer(tsMap)
+  traverse.default.cheap(babelAst, node => {
+    if (node.loc) {
+      const originalStart = tsConsumer.originalPositionFor(node.loc.start)
+      if (originalStart.line) {
+        node.loc.start.line = originalStart.line
+        node.loc.start.column = originalStart.column
+      }
+      const originalEnd = tsConsumer.originalPositionFor(node.loc.end)
+      if (originalEnd.line) {
+        node.loc.start.line = originalEnd.line
+        node.loc.start.column = originalEnd.column
+      }
+    }
+  })
 }
 
 function composeRawSourceMap(tsMap, babelMap) {
@@ -192,6 +213,7 @@ module.exports.transform = function(src, filename, options) {
     })
 
     if (reactNativeMinorVersion >= 52) {
+      sourceMapAstInPlace(tsCompileResult.sourceMapText, babelCompileResult.ast)
       return babelCompileResult
     }
 
