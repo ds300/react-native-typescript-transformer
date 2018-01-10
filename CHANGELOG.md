@@ -1,3 +1,7 @@
+## 1.1.7
+
+Add source map support for RN >= 0.52
+
 ## 1.1.6
 
 Add basic support for RN >= 0.52

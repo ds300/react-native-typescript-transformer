@@ -2,8 +2,6 @@
 
 Seamlessly use TypeScript with react-native >= 0.45
 
-⚠️ source maps in react-native >= 0.52 are broken — see [#39](https://github.com/ds300/react-native-typescript-transformer/issues/39) for the latest developments
-
 ## Usage
 
 ### Step 1: Install
