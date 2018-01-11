@@ -7,6 +7,7 @@ const path = require('path')
 const process = require('process')
 const semver = require('semver')
 const traverse = require('babel-traverse')
+const crypto = require('crypto')
 
 const TSCONFIG_PATH = process.env.TSCONFIG_PATH
 
@@ -165,6 +166,17 @@ const compilerOptions = Object.assign(tsConfig.compilerOptions, {
   sourceMap: true,
   inlineSources: true,
 })
+
+module.exports.getCacheKey = function() {
+  const upstreamCacheKey = upstreamTransformer.getCacheKey
+    ? upstreamTransformer.getCacheKey()
+    : ''
+  var key = crypto.createHash('md5')
+  key.update(upstreamCacheKey)
+  key.update(fs.readFileSync(__filename))
+  key.update(JSON.stringify(tsConfig))
+  return key.digest('hex')
+}
 
 module.exports.transform = function(src, filename, options) {
   if (typeof src === 'object') {
