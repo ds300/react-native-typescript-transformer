@@ -1,3 +1,7 @@
+## 1.2.0
+
+Add implementation for getCacheKey
+
 ## 1.1.7
 
 Add source map support for RN >= 0.52
