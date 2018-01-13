@@ -1,3 +1,8 @@
+
+## 1.2.1
+
+Fix minor bug with ast source map transformation
+
 ## 1.2.0
 
 Add implementation for getCacheKey
