@@ -62,8 +62,8 @@ function sourceMapAstInPlace(tsMap, babelAst) {
       }
       const originalEnd = tsConsumer.originalPositionFor(node.loc.end)
       if (originalEnd.line) {
-        node.loc.start.line = originalEnd.line
-        node.loc.start.column = originalEnd.column
+        node.loc.end.line = originalEnd.line
+        node.loc.end.column = originalEnd.column
       }
     }
   })
