@@ -1,3 +1,9 @@
+## 1.2.3
+
+Fix react native version sniffing.
+
+Contribution by @wsxyeah
+
 ## 1.2.2
 
 Remove `crypto` dependency. It's bundled with node.
