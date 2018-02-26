@@ -45,7 +45,7 @@ module.exports = {
 
 If you need to run the packager directly from the command line, run the following
 
-    react-native start --transformer node_modules/react-native-typescript-transformer/index.js --sourceExts ts,tsx
+    react-native start --config /absolute/path/to/rn-cli.config.js
 
 
 ### Step 4: Write TypeScript code!
