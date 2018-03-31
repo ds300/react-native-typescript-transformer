@@ -1,7 +1,7 @@
 'use strict'
 const ts = require('typescript')
 const fs = require('fs')
-const appRootPath = require('app-root-path')
+const findRoot = require('find-root')
 const os = require('os')
 const path = require('path')
 const process = require('process')
@@ -155,10 +155,12 @@ const tsConfig = (() => {
     console.warn(`resolved = ${resolvedTsconfigPath}`)
     console.warn('looking in app root directory')
   }
-  const tsConfigPath = appRootPath.resolve('tsconfig.json')
-  if (fs.existsSync(tsConfigPath)) {
-    return loadJsonFile(tsConfigPath)
-  }
+  const root = findRoot(process.cwd(), dir => {
+    const pkg = path.join(dir, 'tsconfig.json')
+    return fs.existsSync(pkg)
+  })
+  const tsConfigPath = path.join(root, 'tsconfig.json')
+  return loadJsonFile(tsConfigPath)
   throw new Error(`Unable to find tsconfig.json at ${tsConfigPath}`)
 })()
 
