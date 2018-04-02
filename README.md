@@ -21,8 +21,8 @@ Make sure your tsconfig.json has these compiler options:
     "moduleResolution": "node",
   },
   "exclude": [
-    "node_modules"
-  ]
+    "node_modules",
+  ],
 }
 ```
 
