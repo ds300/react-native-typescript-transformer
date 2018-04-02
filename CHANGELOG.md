@@ -1,3 +1,10 @@
+
+## 1.2.4
+
+Fix tsconfig.json resolution for Monorepos.
+
+Contribution by @ali-hk in #54
+
 ## 1.2.3
 
 Fix react native version sniffing.
