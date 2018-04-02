@@ -17,6 +17,8 @@ let upstreamTransformer = null
 const reactNativeVersionString = require('react-native/package.json').version
 const reactNativeMinorVersion = semver(reactNativeVersionString).minor
 
+const typeScriptVersion = require('typescript/package.json').version
+
 if (reactNativeMinorVersion >= 52) {
   upstreamTransformer = require('metro/src/transformer')
 } else {
@@ -28,6 +30,7 @@ if (reactNativeMinorVersion >= 52) {
   console.error(
     '    Please upgrade react-native or downgrade react-native-typescript-transformer'
   )
+  console.error('')
   process.exit(1)
 }
 
@@ -88,6 +91,41 @@ const tsConfig = (() => {
   const tsConfigPath = path.join(root, 'tsconfig.json')
   return loadJsonFile(tsConfigPath)
 })()
+
+if (semver.lt(typeScriptVersion, '2.7.0')) {
+  if (tsConfig.compilerOptions.allowSyntheticDefaultExports) {
+    console.warn('*** WARNING in tsconfig.json ***')
+    console.warn('')
+    console.warn(
+      '    option allowSyntheticDefaultExports is only compatible with typescript@>=2.7'
+    )
+    console.warn('')
+  }
+}
+
+if (
+  tsConfig.compilerOptions.allowSyntheticDefaultExports &&
+  !tsConfig.compilerOptions.esModuleInterop
+) {
+  console.warn('*** WARNING in tsconfig.json ***')
+  console.warn('')
+  console.warn(
+    '    option allowSyntheticDefaultExports must be combined with esModuleInterop'
+  )
+  console.warn('')
+}
+
+if (
+  tsConfig.compilerOptions.esModuleInterop &&
+  tsConfig.compilerOptions.module.toLowerCase() !== 'commonjs'
+) {
+  console.warn('*** WARNING in tsconfig.json ***')
+  console.warn('')
+  console.warn(
+    '    option esModuleInterop must be used with "module": "commonJS"'
+  )
+  console.warn('')
+}
 
 const compilerOptions = Object.assign(tsConfig.compilerOptions, {
   sourceMap: true,
