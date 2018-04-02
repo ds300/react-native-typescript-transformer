@@ -18,7 +18,7 @@ Make sure your tsconfig.json has these compiler options:
     "target": "es2015",
     "jsx": "react",
     "noEmit": true,
-    "moduleResolution": "node",
+    "moduleResolution": "node"
   },
   "exclude": [
     "node_modules"
