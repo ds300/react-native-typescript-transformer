@@ -8,6 +8,7 @@ const process = require('process')
 const semver = require('semver')
 const traverse = require('babel-traverse')
 const crypto = require('crypto')
+const babylon = require('bablyon')
 
 const TSCONFIG_PATH = process.env.TSCONFIG_PATH
 
@@ -18,21 +19,19 @@ const reactNativeMinorVersion = semver(reactNativeVersionString).minor
 
 if (reactNativeMinorVersion >= 52) {
   upstreamTransformer = require('metro/src/transformer')
-} else if (reactNativeMinorVersion >= 47) {
-  upstreamTransformer = require('metro-bundler/src/transformer')
-} else if (reactNativeMinorVersion === 46) {
-  upstreamTransformer = require('metro-bundler/build/transformer')
 } else {
-  // handle RN <= 0.45
-  const oldUpstreamTransformer = require('react-native/packager/transformer')
-  upstreamTransformer = {
-    transform({ src, filename, options }) {
-      return oldUpstreamTransformer.transform(src, filename, options)
-    },
-  }
+  console.error('***ERROR***')
+  console.error('')
+  console.error(
+    '    react-native-typescript-transformer@^2 requires react-native@>=0.52'
+  )
+  console.error(
+    '    Please upgrade react-native or downgrade react-native-typescript-transformer'
+  )
+  process.exit(1)
 }
 
-const { SourceMapConsumer, SourceMapGenerator } = require('source-map')
+const { SourceMapConsumer } = require('source-map')
 
 function loadJsonFile(jsonFilename) {
   if (!fs.existsSync(jsonFilename)) {
@@ -69,79 +68,6 @@ function sourceMapAstInPlace(tsMap, babelAst) {
   })
 }
 
-function composeRawSourceMap(tsMap, babelMap) {
-  const tsConsumer = new SourceMapConsumer(tsMap)
-  const composedMap = []
-  babelMap.forEach(
-    ([generatedLine, generatedColumn, originalLine, originalColumn, name]) => {
-      if (originalLine) {
-        const tsOriginal = tsConsumer.originalPositionFor({
-          line: originalLine,
-          column: originalColumn,
-        })
-        if (tsOriginal.line) {
-          if (typeof name === 'string') {
-            composedMap.push([
-              generatedLine,
-              generatedColumn,
-              tsOriginal.line,
-              tsOriginal.column,
-              name,
-            ])
-          } else {
-            composedMap.push([
-              generatedLine,
-              generatedColumn,
-              tsOriginal.line,
-              tsOriginal.column,
-            ])
-          }
-        }
-      }
-    }
-  )
-  return composedMap
-}
-
-function composeSourceMaps(tsMap, babelMap, tsFileName, tsContent, babelCode) {
-  const tsConsumer = new SourceMapConsumer(tsMap)
-  const babelConsumer = new SourceMapConsumer(babelMap)
-  const map = new SourceMapGenerator()
-  map.setSourceContent(tsFileName, tsContent)
-  babelConsumer.eachMapping(
-    ({
-      source,
-      generatedLine,
-      generatedColumn,
-      originalLine,
-      originalColumn,
-      name,
-    }) => {
-      if (originalLine) {
-        const original = tsConsumer.originalPositionFor({
-          line: originalLine,
-          column: originalColumn,
-        })
-        if (original.line) {
-          map.addMapping({
-            generated: {
-              line: generatedLine,
-              column: generatedColumn,
-            },
-            original: {
-              line: original.line,
-              column: original.column,
-            },
-            source: tsFileName,
-            name: name,
-          })
-        }
-      }
-    }
-  )
-  return map.toJSON()
-}
-
 const tsConfig = (() => {
   if (TSCONFIG_PATH) {
     const resolvedTsconfigPath = path.resolve(process.cwd(), TSCONFIG_PATH)
@@ -161,7 +87,6 @@ const tsConfig = (() => {
   })
   const tsConfigPath = path.join(root, 'tsconfig.json')
   return loadJsonFile(tsConfigPath)
-  throw new Error(`Unable to find tsconfig.json at ${tsConfigPath}`)
 })()
 
 const compilerOptions = Object.assign(tsConfig.compilerOptions, {
@@ -220,33 +145,13 @@ module.exports.transform = function(src, filename, options) {
       }
     }
 
-    const babelCompileResult = upstreamTransformer.transform({
-      src: tsCompileResult.outputText,
-      filename,
-      options,
+    const ast = babylon.parse(tsCompileResult.outputText, {
+      sourceFilename: filename,
     })
 
-    if (reactNativeMinorVersion >= 52) {
-      sourceMapAstInPlace(tsCompileResult.sourceMapText, babelCompileResult.ast)
-      return babelCompileResult
-    }
+    sourceMapAstInPlace(tsCompileResult.sourceMapText, ast)
 
-    const composedMap = Array.isArray(babelCompileResult.map)
-      ? composeRawSourceMap(
-          tsCompileResult.sourceMapText,
-          babelCompileResult.map
-        )
-      : composeSourceMaps(
-          tsCompileResult.sourceMapText,
-          babelCompileResult.map,
-          filename,
-          src,
-          babelCompileResult.code
-        )
-
-    return Object.assign({}, babelCompileResult, {
-      map: composedMap,
-    })
+    return { ast }
   } else {
     return upstreamTransformer.transform({
       src,
