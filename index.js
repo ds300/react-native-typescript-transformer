@@ -92,40 +92,33 @@ const tsConfig = (() => {
   return loadJsonFile(tsConfigPath)
 })()
 
-if (semver.lt(typeScriptVersion, '2.7.0')) {
-  if (tsConfig.compilerOptions.allowSyntheticDefaultExports) {
+function warnIf(condition, message) {
+  if (condition) {
     console.warn('*** WARNING in tsconfig.json ***')
     console.warn('')
-    console.warn(
-      '    option allowSyntheticDefaultExports is only compatible with typescript@>=2.7'
-    )
+    console.warn('    ' + message)
     console.warn('')
   }
 }
 
-if (
-  tsConfig.compilerOptions.allowSyntheticDefaultExports &&
-  !tsConfig.compilerOptions.esModuleInterop
-) {
-  console.warn('*** WARNING in tsconfig.json ***')
-  console.warn('')
-  console.warn(
-    '    option allowSyntheticDefaultExports must be combined with esModuleInterop'
+if (semver.lt(typeScriptVersion, '2.7.0')) {
+  warnIf(
+    tsConfig.compilerOptions.allowSyntheticDefaultExports,
+    'option allowSyntheticDefaultExports is only compatible with typescript@>=2.7'
   )
-  console.warn('')
 }
 
-if (
+warnIf(
+  tsConfig.compilerOptions.allowSyntheticDefaultExports &&
+    !tsConfig.compilerOptions.esModuleInterop,
+  'option allowSyntheticDefaultExports must be combined with esModuleInterop'
+)
+
+warnIf(
   tsConfig.compilerOptions.esModuleInterop &&
-  tsConfig.compilerOptions.module.toLowerCase() !== 'commonjs'
-) {
-  console.warn('*** WARNING in tsconfig.json ***')
-  console.warn('')
-  console.warn(
-    '    option esModuleInterop must be used with "module": "commonJS"'
-  )
-  console.warn('')
-}
+    tsConfig.compilerOptions.module.toLowerCase() !== 'commonjs',
+  'option esModuleInterop must be used with "module": "commonJS"'
+)
 
 const compilerOptions = Object.assign(tsConfig.compilerOptions, {
   sourceMap: true,
