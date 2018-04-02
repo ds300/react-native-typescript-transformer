@@ -8,7 +8,7 @@ const process = require('process')
 const semver = require('semver')
 const traverse = require('babel-traverse')
 const crypto = require('crypto')
-const babylon = require('bablyon')
+const babylon = require('babylon')
 
 const TSCONFIG_PATH = process.env.TSCONFIG_PATH
 
