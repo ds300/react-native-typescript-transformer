@@ -1,3 +1,8 @@
+## 1.2.5
+
+Improve error message when failure to find tsconfig.json file
+
+Contribution by @vyshkant in #58
 
 ## 1.2.4
 
