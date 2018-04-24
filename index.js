@@ -150,7 +150,7 @@ const tsConfig = (() => {
     }
     console.warn(
       'tsconfig file specified by TSCONFIG_PATH environment variable was not found'
-    )
+    );
     console.warn(`TSCONFIG_PATH = ${TSCONFIG_PATH}`)
     console.warn(`resolved = ${resolvedTsconfigPath}`)
     console.warn('looking in app root directory')
