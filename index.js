@@ -8,6 +8,7 @@ const process = require('process')
 const semver = require('semver')
 const traverse = require('babel-traverse')
 const crypto = require('crypto')
+const chalk = require('chalk')
 
 const TSCONFIG_PATH = process.env.TSCONFIG_PATH
 
@@ -164,22 +165,21 @@ const tsConfig = (() => {
       return fs.existsSync(path.join(dir, expectedTsConfigFileName))
     })
   } catch (error) {
-    throw new Error(
-      `Unable to find project root: no "${expectedTsConfigFileName}" file found. ` +
-        `Original error message: ${error.message}`
-    )
+    console.error(`${chalk.bold(`***ERROR***`)} in react-native-typescript-transformer
+  
+  ${chalk.red(`  Unable to find a "${expectedTsConfigFileName}" file.`)}
+  
+  It should be placed at the root of your project.
+  Otherwise, you can specify another location using the TSCONFIG_PATH environment variable.
+
+`)
+    process.exit(1)
   }
 
   const tsConfigPath = path.join(root, expectedTsConfigFileName)
 
-  try {
-    return loadJsonFile(tsConfigPath)
-  } catch (error) {
-    throw new Error(
-      `Unable to find ${expectedTsConfigFileName} at ${tsConfigPath}` +
-        `Original error message: ${error.message}`
-    )
-  }
+  // the error message thrown by this is good enough on it's own
+  return loadJsonFile(tsConfigPath)
 })()
 
 const compilerOptions = Object.assign(tsConfig.compilerOptions, {
