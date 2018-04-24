@@ -144,6 +144,9 @@ function composeSourceMaps(tsMap, babelMap, tsFileName, tsContent, babelCode) {
 
 const tsConfig = (() => {
   if (TSCONFIG_PATH) {
+    if (fs.existsSync(TSCONFIG_PATH)) {
+        return loadJsonFile(TSCONFIG_PATH)
+    }
     const resolvedTsconfigPath = path.resolve(process.cwd(), TSCONFIG_PATH)
     if (fs.existsSync(resolvedTsconfigPath)) {
       return loadJsonFile(resolvedTsconfigPath)
