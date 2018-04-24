@@ -155,13 +155,31 @@ const tsConfig = (() => {
     console.warn(`resolved = ${resolvedTsconfigPath}`)
     console.warn('looking in app root directory')
   }
-  const root = findRoot(process.cwd(), dir => {
-    const pkg = path.join(dir, 'tsconfig.json')
-    return fs.existsSync(pkg)
-  })
-  const tsConfigPath = path.join(root, 'tsconfig.json')
-  return loadJsonFile(tsConfigPath)
-  throw new Error(`Unable to find tsconfig.json at ${tsConfigPath}`)
+
+  const expectedTsConfigFileName = 'tsconfig.json'
+
+  let root;
+  try {
+    root = findRoot(process.cwd(), dir => {
+      return fs.existsSync(path.join(dir, expectedTsConfigFileName))
+    })
+  } catch (error) {
+    throw new Error(
+      `Unable to find project root: no "${expectedTsConfigFileName}" file found. ` +
+      `Original error message: ${error.message}`
+    )
+  }
+
+  const tsConfigPath = path.join(root, expectedTsConfigFileName)
+
+  try {
+    return loadJsonFile(tsConfigPath)
+  } catch (error) {
+    throw new Error(
+      `Unable to find ${expectedTsConfigFileName} at ${tsConfigPath}` +
+      `Original error message: ${error.message}`
+    )
+  }
 })()
 
 const compilerOptions = Object.assign(tsConfig.compilerOptions, {
