@@ -158,7 +158,7 @@ const tsConfig = (() => {
 
   const expectedTsConfigFileName = 'tsconfig.json'
 
-  let root;
+  let root
   try {
     root = findRoot(process.cwd(), dir => {
       return fs.existsSync(path.join(dir, expectedTsConfigFileName))
@@ -166,7 +166,7 @@ const tsConfig = (() => {
   } catch (error) {
     throw new Error(
       `Unable to find project root: no "${expectedTsConfigFileName}" file found. ` +
-      `Original error message: ${error.message}`
+        `Original error message: ${error.message}`
     )
   }
 
@@ -177,7 +177,7 @@ const tsConfig = (() => {
   } catch (error) {
     throw new Error(
       `Unable to find ${expectedTsConfigFileName} at ${tsConfigPath}` +
-      `Original error message: ${error.message}`
+        `Original error message: ${error.message}`
     )
   }
 })()

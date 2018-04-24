@@ -18,6 +18,7 @@
   },
   "scripts": {
     "precommit": "lint-staged",
+    "lint": "eslint index.js __specs__/**/*.js",
     "test": "jest"
   },
   "lint-staged": {
