@@ -260,7 +260,7 @@ module.exports.transform = async function(src, filename, options) {
       return babelCompileResult
     }
 
-    const composedMap = (await Array.isArray(babelCompileResult.map))
+    const composedMap = await (Array.isArray(babelCompileResult.map)
       ? composeRawSourceMap(
           tsCompileResult.sourceMapText,
           babelCompileResult.map
@@ -271,7 +271,7 @@ module.exports.transform = async function(src, filename, options) {
           filename,
           src,
           babelCompileResult.code
-        )
+        ))
 
     return Object.assign({}, babelCompileResult, {
       map: composedMap,
