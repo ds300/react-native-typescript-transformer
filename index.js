@@ -52,8 +52,8 @@ function loadJsonFile(jsonFilename) {
 }
 
 // only used with RN >= 52
-function sourceMapAstInPlace(tsMap, babelAst) {
-  const tsConsumer = new SourceMapConsumer(tsMap)
+async function sourceMapAstInPlace(tsMap, babelAst) {
+  const tsConsumer = await new SourceMapConsumer(tsMap)
   traverse.default.cheap(babelAst, node => {
     if (node.loc) {
       const originalStart = tsConsumer.originalPositionFor(node.loc.start)
@@ -70,8 +70,8 @@ function sourceMapAstInPlace(tsMap, babelAst) {
   })
 }
 
-function composeRawSourceMap(tsMap, babelMap) {
-  const tsConsumer = new SourceMapConsumer(tsMap)
+async function composeRawSourceMap(tsMap, babelMap) {
+  const tsConsumer = await new SourceMapConsumer(tsMap)
   const composedMap = []
   babelMap.forEach(
     ([generatedLine, generatedColumn, originalLine, originalColumn, name]) => {
@@ -104,9 +104,15 @@ function composeRawSourceMap(tsMap, babelMap) {
   return composedMap
 }
 
-function composeSourceMaps(tsMap, babelMap, tsFileName, tsContent, babelCode) {
-  const tsConsumer = new SourceMapConsumer(tsMap)
-  const babelConsumer = new SourceMapConsumer(babelMap)
+async function composeSourceMaps(
+  tsMap,
+  babelMap,
+  tsFileName,
+  tsContent,
+  babelCode
+) {
+  const tsConsumer = await new SourceMapConsumer(tsMap)
+  const babelConsumer = await new SourceMapConsumer(babelMap)
   const map = new SourceMapGenerator()
   map.setSourceContent(tsFileName, tsContent)
   babelConsumer.eachMapping(
@@ -198,7 +204,7 @@ module.exports.getCacheKey = function() {
   return key.digest('hex')
 }
 
-module.exports.transform = function(src, filename, options) {
+module.exports.transform = async function(src, filename, options) {
   if (typeof src === 'object') {
     // handle RN >= 0.46
     ;({ src, filename, options } = src)
@@ -238,18 +244,23 @@ module.exports.transform = function(src, filename, options) {
       }
     }
 
-    const babelCompileResult = upstreamTransformer.transform({
-      src: tsCompileResult.outputText,
-      filename,
-      options,
-    })
+    const babelCompileResult = await Promise.resolve(
+      upstreamTransformer.transform({
+        src: tsCompileResult.outputText,
+        filename,
+        options,
+      })
+    )
 
     if (reactNativeMinorVersion >= 52) {
-      sourceMapAstInPlace(tsCompileResult.sourceMapText, babelCompileResult.ast)
+      await sourceMapAstInPlace(
+        tsCompileResult.sourceMapText,
+        babelCompileResult.ast
+      )
       return babelCompileResult
     }
 
-    const composedMap = Array.isArray(babelCompileResult.map)
+    const composedMap = (await Array.isArray(babelCompileResult.map))
       ? composeRawSourceMap(
           tsCompileResult.sourceMapText,
           babelCompileResult.map
