@@ -1,3 +1,7 @@
+## 1.2.6
+
+Update source-map, which now uses WASM and is apparently a lot faster.
+
 ## 1.2.5
 
 Improve error message when failure to find tsconfig.json file
