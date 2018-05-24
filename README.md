@@ -162,6 +162,31 @@ If you're transitioning an app from `tsc` to `react-native-typescript-transforme
 
 Be especially careful of "umbrella export" files which can easily introduce these cycles.
 
+## Configuration settings through a custom transformer
+The transformer allows you to set configuration options, but due to the way Metro works, we must specify these options at transformer-creation time. This requires us to create a custom transformer to set these options. We can use the exported `createTransformer` function from `createTransformer.js` to create a transformer with custom options set.
+
+```js
+// rn-cli.config.js
+module.exports = {
+  getTransformModulePath() {
+    return require.resolve('./custom-transformer');
+  },
+  ...
+```
+
+```js
+// custom-transformer.js
+const { createTransformer, getCacheKey } = require('react-native-typescript-transformer/createTransformer');
+
+module.exports.transform = createTransformer(
+  { tsConfigPath: 'tsconfig.production.json' }
+);
+module.exports.getCacheKey = getCacheKey;
+```
+
+### Available options
+* `tsConfigPath` - specify the location of TypeScript config. This can also be done with the `TSCONFIG_PATH` environment variable.
+
 ## License
 
 MIT
