@@ -6,6 +6,10 @@
   "repository": "https://github.com/ds300/react-native-typescript-transformer",
   "author": "David Sheldrick",
   "license": "MIT",
+  "engineStrict": true,
+  "engines": {
+    "node": ">=8.0.0"
+  },
   "dependencies": {
     "chalk": "^2.4.0",
     "find-root": "^1.1.0",
