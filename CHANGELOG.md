@@ -1,3 +1,8 @@
+
+## 1.2.7
+
+Add enginges field in package.json, since WebAssembly is only available in node 8+
+
 ## 1.2.6
 
 Update source-map, which now uses WASM and is apparently a lot faster.
