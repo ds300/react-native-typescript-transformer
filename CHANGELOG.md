@@ -1,3 +1,6 @@
+## 1.2.9
+Revert to old (sync, non-wasm) version of source-map. Not worth the trouble right now?
+
 ## 1.2.8
 
 Remove engingeStrict field in package.json, since some people claim that the version range
