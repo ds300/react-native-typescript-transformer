@@ -1,3 +1,7 @@
+## 1.2.8
+
+Remove engingeStrict field in package.json, since some people claim that the version range
+`>=8.0.0` is being mishandled by npm (???)
 
 ## 1.2.7
 
