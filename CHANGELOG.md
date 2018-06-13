@@ -1,3 +1,8 @@
+## 1.2.10
+Add support for RN >= 56
+
+Contribution by timwangdev
+
 ## 1.2.9
 Revert to old (sync, non-wasm) version of source-map. Not worth the trouble right now?
 
