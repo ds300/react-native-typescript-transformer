@@ -141,10 +141,11 @@ If you use Jest as a test runner, add the following in your root package.json:
   ```patch
    {
      "compilerOptions": {
-  +    "lib": [ "dom", "es2015", "es2016" ],
+  +    "lib": [ "es2015", "es2016", "es2017" ],
      }
    }
   ```
+  Including the `"dom"` lib is not recommended. The React Native JavaScript runtime does not include any DOM-related APIs. See [JavaScript Environment](https://facebook.github.io/react-native/docs/javascript-environment) for more details on what web APIs React Native supports.
 
 ## Jest notes
 
