@@ -141,7 +141,7 @@ If you use Jest as a test runner, add the following in your root package.json:
   ```patch
    {
      "compilerOptions": {
-  +    "lib": [ "es2015", "es2016", "es2017" ],
+  +    "lib": [ "es2017" ],
      }
    }
   ```
