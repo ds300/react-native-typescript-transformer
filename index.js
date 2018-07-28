@@ -206,7 +206,7 @@ module.exports.transform = function(src, filename, options) {
     ;({ src, filename, options } = src)
   }
 
-  if (filename.endsWith('.ts') || filename.endsWith('.tsx')) {    
+  if (filename.endsWith('.ts') || filename.endsWith('.tsx')) {
     if (compilerOptions.noEmitOnError) {
       const program = ts.createProgram([filename], compilerOptions)
 
@@ -214,7 +214,7 @@ module.exports.transform = function(src, filename, options) {
         .getPreEmitDiagnostics(program)
         .filter(({ category }) => category === ts.DiagnosticCategory.Error)
 
-      reportErrors(preErrors)
+      reportErrors(preErrors, filename, options)
     }
 
     const tsCompileResult = ts.transpileModule(src, {
@@ -227,7 +227,7 @@ module.exports.transform = function(src, filename, options) {
       ({ category }) => category === ts.DiagnosticCategory.Error
     )
 
-    reportErrors(errors)
+    reportErrors(errors, filename, options)
 
     const babelCompileResult = upstreamTransformer.transform({
       src: tsCompileResult.outputText,
@@ -265,7 +265,7 @@ module.exports.transform = function(src, filename, options) {
   }
 }
 
-function reportErrors(errors) {
+function reportErrors(errors, filename, options) {
   if (errors.length) {
     // report first error
     const error = errors[0]
