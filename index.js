@@ -206,7 +206,17 @@ module.exports.transform = function(src, filename, options) {
     ;({ src, filename, options } = src)
   }
 
-  if (filename.endsWith('.ts') || filename.endsWith('.tsx')) {
+  if (filename.endsWith('.ts') || filename.endsWith('.tsx')) {    
+    if (compilerOptions.noEmitOnError) {
+      const program = ts.createProgram([filename], compilerOptions)
+
+      const preErrors = ts
+        .getPreEmitDiagnostics(program)
+        .filter(({ category }) => category === ts.DiagnosticCategory.Error)
+
+      reportErrors(preErrors)
+    }
+
     const tsCompileResult = ts.transpileModule(src, {
       compilerOptions,
       fileName: filename,
@@ -217,28 +227,7 @@ module.exports.transform = function(src, filename, options) {
       ({ category }) => category === ts.DiagnosticCategory.Error
     )
 
-    if (errors.length) {
-      // report first error
-      const error = errors[0]
-      const message = ts.flattenDiagnosticMessageText(error.messageText, '\n')
-      if (error.file) {
-        let { line, character } = error.file.getLineAndCharacterOfPosition(
-          error.start
-        )
-        if (error.file.fileName === 'module.ts') {
-          console.error({
-            error,
-            filename,
-            options,
-          })
-        }
-        throw new Error(
-          `${error.file.fileName} (${line + 1},${character + 1}): ${message}`
-        )
-      } else {
-        throw new Error(message)
-      }
-    }
+    reportErrors(errors)
 
     const babelCompileResult = upstreamTransformer.transform({
       src: tsCompileResult.outputText,
@@ -273,5 +262,30 @@ module.exports.transform = function(src, filename, options) {
       filename,
       options,
     })
+  }
+}
+
+function reportErrors(errors) {
+  if (errors.length) {
+    // report first error
+    const error = errors[0]
+    const message = ts.flattenDiagnosticMessageText(error.messageText, '\n')
+    if (error.file) {
+      let { line, character } = error.file.getLineAndCharacterOfPosition(
+        error.start
+      )
+      if (error.file.fileName === 'module.ts') {
+        console.error({
+          error,
+          filename,
+          options,
+        })
+      }
+      throw new Error(
+        `${error.file.fileName} (${line + 1},${character + 1}): ${message}`
+      )
+    } else {
+      throw new Error(message)
+    }
   }
 }
