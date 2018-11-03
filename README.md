@@ -34,11 +34,13 @@ Add this to your rn-cli.config.js (make one if you don't have one already):
 
 ```js
 module.exports = {
-  getTransformModulePath() {
-    return require.resolve('react-native-typescript-transformer');
+  transformer: {
+    babelTransformerPath: require.resolve(
+      'react-native-typescript-transformer'
+    )
   },
-  getSourceExts() {
-    return ['ts', 'tsx'];
+  resolver: {
+    sourceExts: ['js', 'ts', 'tsx']
   }
 }
 ```
