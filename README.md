@@ -38,9 +38,6 @@ module.exports = {
     babelTransformerPath: require.resolve(
       'react-native-typescript-transformer'
     )
-  },
-  resolver: {
-    sourceExts: ['js', 'ts', 'tsx']
   }
 }
 ```
