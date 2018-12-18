@@ -2,7 +2,32 @@
 
 Seamlessly use TypeScript with react-native >= 0.45
 
-## Usage
+## Stop! You probably don't need this package.
+
+If you are starting a new React Native project, you can initialize the project with this command:
+
+    react-native init MyAwesomeProject --template typescript
+
+This will set up the project to transpile your TypeScript files using Babel.
+
+Otherwise, if you're using React Native 0.57+ and you are converting an existing RN app to TS, then you can follow the configuration in this gist: https://gist.github.com/DimitryDushkin/bcf5a7f5df71113c67dbe2e890008308
+
+### Babel Caveats
+
+Babel will not type-check your files. You'll still want to use the TypeScript compiler as a kind of linter (with the `noEmit` compiler option set to true).
+
+Also there are four rarely-used langauge features that can't be compiled with Babel.
+
+From [this blog post](https://blogs.msdn.microsoft.com/typescript/2018/08/27/typescript-and-babel-7/):
+
+- namespaces
+- bracket style type-assertion/cast syntax regardless of when JSX is enabled (i.e. writing `<Foo>x` won’t work even in `.ts` files if JSX support is turned on, but you can instead write `x as Foo`).
+- enums that span multiple declarations (i.e. enum merging)
+- legacy-style import/export syntax (i.e. `import foo = require(...)` and `export = foo`)
+
+Don't expect this list to grow.
+
+## I'm on RN < 0.57 or I definitely want to compile my TypeScript files using TypeScript and not Babel
 
 ### Step 1: Install
 
@@ -32,12 +57,25 @@ See [tsconfig.json Notes](#tsconfigjson-notes) for more advanced configuration d
 
 Add this to your rn-cli.config.js (make one if you don't have one already):
 
+#### RN >= 0.57
 ```js
 module.exports = {
   transformer: {
-    babelTransformerPath: require.resolve(
-      'react-native-typescript-transformer'
-    )
+    babelTransformerPath: require.resolve('react-native-typescript-transformer')
+  }
+}
+```
+
+or
+
+#### RN < 0.57
+```js
+module.exports = {
+  getTransformModulePath() {
+    return require.resolve('react-native-typescript-transformer');
+  },
+  getSourceExts() {
+    return ['ts', 'tsx'];
   }
 }
 ```
