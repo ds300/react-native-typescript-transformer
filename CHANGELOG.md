@@ -1,3 +1,16 @@
+## 1.2.12
+Add support for RN >= 59
+
+## 1.2.11
+
+- David Sheldrick update lockfile
+- David Sheldrick update readme for babel 7
+- Koen Punt remove resolver.sourceExts
+- Koen Punt update readme for latest metro bundler
+- aleclarson fix: add missing dependency
+- Andrew Goodale Simplify lib to just `es2017`
+- Andrew Goodale Do not recommend "dom" TS library
+
 ## 1.2.10
 Add support for RN >= 56
 
