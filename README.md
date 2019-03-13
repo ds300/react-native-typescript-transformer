@@ -55,9 +55,22 @@ See [tsconfig.json Notes](#tsconfigjson-notes) for more advanced configuration d
 
 ### Step 3: Configure the react native packager
 
-Add this to your rn-cli.config.js (make one if you don't have one already):
+#### RN >= 0.59
 
-#### RN >= 0.57
+In your projects root, extend `metro.config.js` so it contains the `transformer.babelTransformerPath` property:
+
+```js
+module.exports = {
+  transformer: {
+    babelTransformerPath: require.resolve('react-native-typescript-transformer')
+  }
+};
+```
+
+#### RN >= 0.57, < 0.59
+
+Add this to your `rn-cli.config.js` (make one if you don't have one already):
+
 ```js
 module.exports = {
   transformer: {
@@ -66,9 +79,10 @@ module.exports = {
 }
 ```
 
-or
-
 #### RN < 0.57
+
+Add this to your `rn-cli.config.js` (make one if you don't have one already):
+
 ```js
 module.exports = {
   getTransformModulePath() {
