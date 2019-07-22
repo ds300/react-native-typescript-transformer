@@ -208,7 +208,7 @@ Note that there have been no reports of problems arising from differences betwee
 
 ## Avoid cyclical dependencies
 
-If you're transitioning an app from `tsc` to `react-native-typescript-transformer`, you might see runtime errors which involve imported modules being `undefined`. You almost certainly have cyclical inter-module dependencies which manifest during your app's initialization. e.g. if ModuleA is `undefined` in ModuleB it means that ModolueA (in)directly imports ModuleB.
+If you're transitioning an app from `tsc` to `react-native-typescript-transformer`, you might see runtime errors which involve imported modules being `undefined`. You almost certainly have cyclical inter-module dependencies which manifest during your app's initialization. e.g. if ModuleA is `undefined` in ModuleB it means that ModuleA (in)directly imports ModuleB.
 
 `tsc` seems to be able to mitigate some instances of these cyclical dependencies when used as a whole-app compiler. Unfortunately the module-at-a-time compilation approach that react-native's bundler supports does not permit the same optimizations.
 
