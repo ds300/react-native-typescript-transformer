@@ -1,0 +1,7 @@
+{
+    "extends": "./tsconfigExtendsFile.json",
+    "compilerOptions": {
+        "tsconfigExtendsFileRecursive": true,
+        "overrideMe": "tsconfigExtendsFileRecursive"
+    }
+}

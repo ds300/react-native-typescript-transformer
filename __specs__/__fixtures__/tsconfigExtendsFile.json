@@ -1,0 +1,7 @@
+{
+    "extends": "./tsconfigNoExtends.json",
+    "compilerOptions": {
+        "tsconfigExtendsFile": true,
+        "overrideMe": "tsconfigExtendsFile"
+    }
+}

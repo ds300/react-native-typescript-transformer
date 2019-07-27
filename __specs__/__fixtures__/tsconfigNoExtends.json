@@ -1,0 +1,6 @@
+{
+    "compilerOptions": {
+        "tsconfigNoExtends": true,
+        "overrideMe": "tsconfigNoExtends"
+    }
+}
