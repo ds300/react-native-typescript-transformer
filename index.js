@@ -9,8 +9,7 @@ const semver = require('semver')
 const traverse = require('babel-traverse')
 const crypto = require('crypto')
 const chalk = require('chalk')
-
-const TSCONFIG_PATH = process.env.TSCONFIG_PATH
+const deepmerge = require('deepmerge')
 
 let upstreamTransformer = null
 
@@ -39,20 +38,57 @@ if (reactNativeMinorVersion >= 59) {
 
 const { SourceMapConsumer, SourceMapGenerator } = require('source-map')
 
-function loadJsonFile(jsonFilename) {
-  if (!fs.existsSync(jsonFilename)) {
-    throw new Error(`Input file not found: ${jsonFilename}`)
-  }
-
-  const buffer = fs.readFileSync(jsonFilename)
+function loadJsonFile(jsonFileName) {
   try {
-    let jju = require('jju')
+    const buffer = fs.readFileSync(jsonFileName)
+    const jju = require('jju')
     return jju.parse(buffer.toString())
   } catch (error) {
     throw new Error(
-      `Error reading "${jsonFilename}":${os.EOL}  ${error.message}`
+      `Error reading "${jsonFileName}":${os.EOL}  ${error.message}`
     )
   }
+}
+
+function getFileOrModulePath(location) {
+  try {
+    return require.resolve(location)
+  } catch (e) {}
+}
+
+function isFile(location) {
+  return fs.existsSync(location)
+}
+
+// loads config file supporting recursive extendsion from files or node modules
+function loadConfig(location) {
+  let json
+  const configPath = getFileOrModulePath(location)
+  if (configPath) {
+    try {
+      json = loadJsonFile(configPath)
+    } catch (error) {
+      throw new Error(
+        `Error loading config ${location}:${os.EOL}  ${error.message}`
+      )
+    }
+  } else {
+    throw new Error(`Could not load config from ${location}`)
+  }
+
+  if (typeof json.extends === 'string') {
+    const relativeCandidate = path.join(
+      path.dirname(configPath),
+      `${json.extends}${json.extends.endsWith('.json') ? '' : '.json'}`
+    )
+    const extendedLocation = isFile(relativeCandidate)
+      ? relativeCandidate
+      : json.extends
+    const extendedJson = loadConfig(extendedLocation)
+    json = deepmerge(extendedJson, json, { arrayMerge: (_, source) => source })
+    delete json.extends
+  }
+  return json
 }
 
 // only used with RN >= 52
@@ -147,11 +183,13 @@ function composeSourceMaps(tsMap, babelMap, tsFileName, tsContent, babelCode) {
   return map.toJSON()
 }
 
-const tsConfig = (() => {
+function loadTSConfig() {
+  const TSCONFIG_PATH = process.env.TSCONFIG_PATH
+
   if (TSCONFIG_PATH) {
     const resolvedTsconfigPath = path.resolve(process.cwd(), TSCONFIG_PATH)
-    if (fs.existsSync(resolvedTsconfigPath)) {
-      return loadJsonFile(resolvedTsconfigPath)
+    if (isFile(resolvedTsconfigPath)) {
+      return loadConfig(resolvedTsconfigPath)
     }
     console.warn(
       'tsconfig file specified by TSCONFIG_PATH environment variable was not found'
@@ -166,7 +204,7 @@ const tsConfig = (() => {
   let root
   try {
     root = findRoot(process.cwd(), dir => {
-      return fs.existsSync(path.join(dir, expectedTsConfigFileName))
+      return isFile(path.join(dir, expectedTsConfigFileName))
     })
   } catch (error) {
     console.error(`${chalk.bold(`***ERROR***`)} in react-native-typescript-transformer
@@ -174,7 +212,7 @@ const tsConfig = (() => {
   ${chalk.red(`  Unable to find a "${expectedTsConfigFileName}" file.`)}
   
   It should be placed at the root of your project.
-  Otherwise, you can specify another location using the TSCONFIG_PATH environment variable.
+        Otherwise, you can specify another location using the TSCONFIG_PATH environment variable.
 
 `)
     process.exit(1)
@@ -183,15 +221,17 @@ const tsConfig = (() => {
   const tsConfigPath = path.join(root, expectedTsConfigFileName)
 
   // the error message thrown by this is good enough on it's own
-  return loadJsonFile(tsConfigPath)
-})()
+  return loadConfig(tsConfigPath)
+}
+
+const tsConfig = loadTSConfig()
 
 const compilerOptions = Object.assign(tsConfig.compilerOptions, {
   sourceMap: true,
   inlineSources: true,
 })
 
-module.exports.getCacheKey = function() {
+function getCacheKey() {
   const upstreamCacheKey = upstreamTransformer.getCacheKey
     ? upstreamTransformer.getCacheKey()
     : ''
@@ -202,7 +242,7 @@ module.exports.getCacheKey = function() {
   return key.digest('hex')
 }
 
-module.exports.transform = function(src, filename, options) {
+function transform(src, filename, options) {
   if (typeof src === 'object') {
     // handle RN >= 0.46
     ;({ src, filename, options } = src)
@@ -276,4 +316,10 @@ module.exports.transform = function(src, filename, options) {
       options,
     })
   }
+}
+
+module.exports = {
+  getCacheKey,
+  loadTSConfig,
+  transform,
 }

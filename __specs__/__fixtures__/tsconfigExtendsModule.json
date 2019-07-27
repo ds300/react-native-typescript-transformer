@@ -1,0 +1,7 @@
+{
+    "extends": "@instacart/tsconfig",
+    "compilerOptions": {
+        "tsconfigExtendsModule": true,
+        "moduleResolution": "ES6"
+    }
+}

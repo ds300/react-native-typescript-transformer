@@ -1,0 +1,7 @@
+{
+    "extends": "@instacart/tsconfig/babel",
+    "compilerOptions": {
+        "tsconfigExtendsModuleRecursive": true,
+        "moduleResolution": "ES6"
+    }
+}
