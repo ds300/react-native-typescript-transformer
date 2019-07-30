@@ -1,5 +1,10 @@
+## 1.2.13
+
+- Add support for "extends" tsconfig option. Contribution by @alechill
+
 ## 1.2.12
-Add support for RN >= 59
+
+- Add support for RN >= 59
 
 ## 1.2.11
 
@@ -12,11 +17,13 @@ Add support for RN >= 59
 - Andrew Goodale Do not recommend "dom" TS library
 
 ## 1.2.10
+
 Add support for RN >= 56
 
 Contribution by timwangdev
 
 ## 1.2.9
+
 Revert to old (sync, non-wasm) version of source-map. Not worth the trouble right now?
 
 ## 1.2.8
