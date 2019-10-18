@@ -4,9 +4,7 @@ Seamlessly use TypeScript with react-native >= 0.45
 
 ## Stop! You probably don't need this package.
 
-If you are starting a new React Native project, you can initialize the project with this command:
-
-    react-native init MyAwesomeProject --template typescript
+If you are starting a new React Native project, you can follow the instructions in the React Native docs: https://facebook.github.io/react-native/docs/typescript
 
 This will set up the project to transpile your TypeScript files using Babel.
 
